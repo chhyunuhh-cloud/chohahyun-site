@@ -40,7 +40,7 @@ async function initGallery(category){
   setupArrows();
   const grid = qs("#grid");
   const data = await loadJSON(`content/${category}.json`);
-  const shoots = data.shoots || [];
+  const shoots = Array.isArray(data) ? data : (data.shoots || []);
   shoots.forEach(s=>grid.appendChild(makeCard(s, category)));
 }
 window.__GALLERY__ = { initGallery };
