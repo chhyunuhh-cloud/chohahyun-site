@@ -1,7 +1,7 @@
 function qs(sel){ return document.querySelector(sel); }
 function pad(n){ return String(n).padStart(2,"0"); }
 
-var VER = "20260215a";
+var VER = "202602152";
 
 function sanitizeCat(cat){
   if(!cat) return "";
