@@ -1,8 +1,11 @@
-[
-  {
-    "slug": "gesgep",
-    "title": "GESGEP",
-    "subtitle": "GESGEP 2026",
-    "cover": "content/beauty/gesgep/cover.jpg"
-  }
-]
+{
+  "shoots": [
+    {
+      "slug": "gesgep",
+      "title": "GESGEP",
+      "subtitle": "GESGEP 2026",
+      "cover": "content/beauty/gesgep/cover.jpg",
+      "max": 40
+    }
+  ]
+}
