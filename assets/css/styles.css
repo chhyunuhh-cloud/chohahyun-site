@@ -237,3 +237,15 @@ body{
   cursor:pointer;
   font-size:16px;
 }
+
+.detailGrid{
+  display: grid;
+  gap: 12px;
+}
+
+.detailImg{
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  object-fit: cover;
+}
