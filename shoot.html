@@ -1,30 +1,45 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>HAIR MAKEUP CHOHAHYUN</title>
-<meta name="description" content="Hair & Makeup portfolio - CHOHAHYUN" />
-<link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HAIR MAKEUP CHOHAHYUN</title>
+  <meta name="description" content="Hair & Makeup portfolio - CHOHAHYUN" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 
 <body>
+  <div id="site-header"></div>
 
-<div id="site-header"></div>
+  <div class="page">
+    <main class="main" aria-label="shoot detail">
+      <div class="detailWrap">
+        <div id="detailTitle" class="detailTitle"></div>
+        <div id="detailGrid" class="detailGrid"></div>
+        <a id="backLink" class="backLink" href="beauty.html">← back</a>
+      </div>
+    </main>
+  </div>
 
-<div class="page">
-  <main class="main" aria-label="shoot detail">
-    <div class="detailWrap">
-      <div id="detailTitle" class="detailTitle"></div>
-      <div id="detailGrid" class="detailGrid"></div>
-      <a id="backLink" class="backLink" href="beauty.html">← back</a>
-    </div>
-  </main>
-</div>
+  <!-- ✅ shoot.html이 최신 반영됐는지 즉시 확인용 배지 -->
+  <script>
+    (function(){
+      var b = document.createElement('div');
+      b.textContent = 'SHOOT HTML LOADED';
+      b.style.position='fixed';
+      b.style.left='10px';
+      b.style.top='10px';
+      b.style.zIndex='99999';
+      b.style.background='rgba(0,0,0,.8)';
+      b.style.color='#fff';
+      b.style.padding='6px 8px';
+      b.style.borderRadius='8px';
+      b.style.fontSize='12px';
+      document.body.appendChild(b);
+    })();
+  </script>
 
-<!-- JS는 반드시 body 맨 아래 -->
-<script src="assets/js/main.js"></script>
-<script src="assets/js/shoot.js?v=1"></script>
-
+  <script src="assets/js/main.js?v=20260215a"></script>
+  <script src="assets/js/shoot.js?v=20260215a"></script>
 </body>
 </html>
