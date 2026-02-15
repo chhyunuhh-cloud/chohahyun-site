@@ -254,9 +254,6 @@ body.menu-open .side-menu{transform:translateX(0)}
   line-height: 1.6;
   white-space: pre-line;
 }
-.contactBlock a{
-  border-bottom: 1px solid rgba(17,17,17,.25);
-}
 .contactBlock a:hover{
   border-bottom-color: rgba(17,17,17,.9);
 }
