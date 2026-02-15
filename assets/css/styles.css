@@ -91,6 +91,7 @@ a:hover{opacity:.85}
   padding: 6px 10px;
   font-size: 22px;
   line-height: 1;
+  opacity: 0.75;
   cursor: pointer;
 }
 
@@ -315,6 +316,7 @@ body.menu-open .side-menu{transform:translateX(0)}
   border: 0 !important;
   box-shadow: none !important;
   -webkit-appearance: none;
+  opacity:0.75;
   appearance: none;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
