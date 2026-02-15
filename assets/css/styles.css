@@ -280,6 +280,7 @@ body.menu-open .side-menu{transform:translateX(0)}
 }
 
 /* Brand → 하단 풀폭 바 */
+/* Brand → 하단 풀폭 바 (박스 스타일 완전 제거) */
 .brand{
   position: fixed;
   left: 0;
@@ -287,19 +288,25 @@ body.menu-open .side-menu{transform:translateX(0)}
   bottom: 0;
   z-index: 99999;
 
-  /* 바 느낌 */
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+
   background: rgba(255,255,255,.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+
   border-top: 1px solid rgba(0,0,0,.08);
 
-  /* 텍스트 */
+  /* ✅ 박스 느낌 제거(중요) */
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+
   text-transform: uppercase;
   line-height: 1.15;
   pointer-events: none;
 }
-
 /* 글자 스타일은 유지 */
 .brand-sub{display:block;font-size:12px;letter-spacing:0.26em;opacity:.75}
 .brand-main{display:block;margin-top:6px;font-size:26px;letter-spacing:0.18em;font-weight:600}
