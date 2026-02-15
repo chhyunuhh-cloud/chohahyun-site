@@ -391,3 +391,28 @@ img {
     right: calc(50% - (var(--frameW) / 2));
   }
 }
+@media (min-width: 641px){
+
+  /* 오버레이는 프레임 안쪽만 */
+  .menu-overlay{
+    left: calc(50% - (var(--frameW) / 2));
+    right: calc(50% - (var(--frameW) / 2));
+  }
+
+  /* 메뉴 위치는 프레임 오른쪽 경계 */
+  .side-menu{
+    right: calc(50% - (var(--frameW) / 2));
+  }
+
+  /* ✅ 닫힌 상태: 더 많이 밀어내서 완전 숨기기 + 클릭 방지 */
+  body:not(.menu-open) .side-menu{
+    transform: translateX(calc(100% + 24px)); /* 100%보다 더 */
+    pointer-events: none;
+  }
+
+  /* 열린 상태 */
+  body.menu-open .side-menu{
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+}
