@@ -266,3 +266,27 @@ body{
   display: block;
   border-radius: 18px;
 }
+/* =========================
+   모바일에서 SHOOT 상세 이미지 안 보일 때 응급처치
+   ========================= */
+
+/* detail 영역이 높이 0 / overflow hidden / display none 되는 케이스 방지 */
+.detailWrap,
+.detailGrid{
+  height: auto !important;
+  min-height: 1px !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* 이미지가 absolute/투명/축소되는 케이스 방지 */
+.detailGrid .detailImg{
+  position: static !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  max-width: 100% !important;
+}
