@@ -21,29 +21,6 @@
     </main>
   </div>
 
-  <!-- ✅ shoot.html이 최신 반영됐는지 즉시 확인용 배지 -->
-<script>
-  window.__shootPing = function(msg){
-    var el = document.getElementById("shootPing");
-    if(!el){
-      el = document.createElement("div");
-      el.id = "shootPing";
-      el.style.position="fixed";
-      el.style.left="10px";
-      el.style.top="44px";
-      el.style.zIndex="99999";
-      el.style.background="rgba(0,80,0,.85)";
-      el.style.color="#fff";
-      el.style.padding="6px 8px";
-      el.style.borderRadius="8px";
-      el.style.fontSize="12px";
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
-  };
-  window.__shootPing("shoot.js not started yet…");
-</script>
-
   <script src="assets/js/main.js?v=20260215a"></script>
   <script src="assets/js/shoot.js?v=diag2354236"></script>
 </body>
