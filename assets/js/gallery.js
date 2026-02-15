@@ -5,6 +5,9 @@ async function loadJSON(path){
 }
 function qs(sel, el=document){ return el.querySelector(sel); }
 
+// ✅ 상세페이지 문서 캐시 깨기용 버전 (업데이트 할 때마다 숫자만 올리면 됨)
+const SHOOT_PAGE_VER = "3";
+
 const order = ["beauty.html","fashion.html","personal.html","contact.html"];
 function setupArrows(){
   const here = location.pathname.split("/").pop() || "index.html";
@@ -20,13 +23,19 @@ function setupArrows(){
 function makeCard(shoot, category){
   const a = document.createElement("a");
   a.className = "card";
-  a.href = `shoot.html?${new URLSearchParams({ cat: category, slug: shoot.slug }).toString()}`;
+
+  // ✅ shoot.html 자체를 v로 캐시버스팅
+  const params = new URLSearchParams({
+    v: SHOOT_PAGE_VER,
+    cat: category,
+    slug: shoot.slug
+  });
+  a.href = `shoot.html?${params.toString()}`;
 
   const img = document.createElement("img");
   img.loading = "lazy";
   img.alt = shoot.title || "";
 
-  // JSON에는 cover 파일명만(기본: cover.jpg) 넣고, 실제 경로는 규칙으로 조립
   const coverFile = shoot.cover || "cover.jpg";
   img.src = `content/${category}/${shoot.slug}/${coverFile}`;
 
@@ -36,10 +45,8 @@ function makeCard(shoot, category){
   const title = document.createElement("span");
   title.className = "card-label";
   title.textContent = shoot.title ? shoot.title : "tap to view";
-
   labelWrap.appendChild(title);
 
-  // subtitle이 있으면 2줄로 표시(없으면 생략)
   if(shoot.subtitle){
     const sub = document.createElement("span");
     sub.className = "card-sub";
@@ -59,7 +66,6 @@ async function initGallery(category){
 
   const data = await loadJSON(`content/${category}.json`);
   const shoots = Array.isArray(data) ? data : (data.shoots || []);
-
   shoots.forEach(s => grid.appendChild(makeCard(s, category)));
 }
 
