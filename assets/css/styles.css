@@ -350,3 +350,24 @@ body.menu-open .side-menu{transform:translateX(0)}
 .card{
   border: 0 !important;
 }
+
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:active,
+button:active,
+.card:active,
+.brand:active,
+.menu-toggle:active {
+  background: transparent !important;
+}
+
+img {
+  -webkit-touch-callout: none;
+}
+
+::selection {
+  background: transparent;
+}
