@@ -1,85 +1,91 @@
-async function loadJSON(path){
-  const res = await fetch(path, { cache: "no-store" });
-  if(!res.ok) throw new Error(`Failed to load ${path}`);
-  return await res.json();
-}
 function qs(sel, el=document){ return el.querySelector(sel); }
-
 function pad2(n){ return String(n).padStart(2, "0"); }
 
 function loadImage(src){
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.loading = "lazy";
+    img.decoding = "async";
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
 }
 
+async function tryLoadAny(base, name){
+  const exts = ["jpg","JPG","jpeg","JPEG","png","PNG","webp","WEBP"];
+  for(const ext of exts){
+    const src = `${base}${name}.${ext}`;
+    try{
+      const img = await loadImage(src);
+      img.dataset.src = src;
+      return img;
+    }catch(e){}
+  }
+  return null;
+}
+
+function debugBadge(text){
+  const el = document.createElement("div");
+  el.style.position = "fixed";
+  el.style.left = "10px";
+  el.style.bottom = "10px";
+  el.style.zIndex = "99999";
+  el.style.background = "rgba(0,0,0,.75)";
+  el.style.color = "#fff";
+  el.style.padding = "6px 8px";
+  el.style.borderRadius = "8px";
+  el.style.fontSize = "12px";
+  el.textContent = text;
+  document.body.appendChild(el);
+  return el;
+}
+
 async function initShoot(){
+  const badge = debugBadge("shoot: booting...");
+
   const params = new URLSearchParams(location.search);
   const cat = params.get("cat") || params.get("category");
   const slug = params.get("slug");
 
-  if(!cat || !slug){
-    console.error("Missing query params:", { cat, slug, search: location.search });
-    const titleEl = qs("#detailTitle");
-    if(titleEl) titleEl.textContent = "Invalid link (missing cat/slug)";
-    return;
-  }
-
-  // ✅ shoot.html의 실제 컨테이너
   const titleEl = qs("#detailTitle");
   const gridEl  = qs("#detailGrid");
   const backEl  = qs("#backLink");
 
+  if(backEl && cat) backEl.href = `${cat}.html`;
+
   if(!gridEl){
-    console.error("Missing #detailGrid in shoot.html");
+    badge.textContent = "shoot: NO #detailGrid";
+    return;
+  }
+  if(!cat || !slug){
+    badge.textContent = "shoot: missing cat/slug";
+    if(titleEl) titleEl.textContent = "Invalid link (missing cat/slug)";
     return;
   }
 
-  // back 링크를 현재 카테고리로 자동 설정
-  if(backEl) backEl.href = `${cat}.html`;
+  const base = `content/${cat}/${slug}/`;
+  let added = 0;
 
-  // (선택) 타이틀/서브타이틀 표시: 해당 카테고리 JSON에서 slug로 찾아옴
-  try{
-    const data = await loadJSON(`content/${cat}.json`);
-    const shoots = Array.isArray(data) ? data : (data.shoots || []);
-    const shoot = shoots.find(s => s.slug === slug);
+  for(let i=1; i<=199; i++){
+    const name = pad2(i);
+    const img = await tryLoadAny(base, name);
+    if(!img) break;
 
-    if(titleEl){
-      if(shoot){
-        titleEl.innerHTML = `
-          <div class="detailTitleMain">${shoot.title || ""}</div>
-          ${shoot.subtitle ? `<div class="detailTitleSub">${shoot.subtitle}</div>` : ""}
-        `;
-      }else{
-        titleEl.textContent = slug;
-      }
-    }
-  }catch(e){
-    // JSON 못 읽어도 사진은 로드되게 계속 진행
-    if(titleEl) titleEl.textContent = slug;
+    img.alt = `${slug} ${name}`;
+    img.className = "detailImg";
+    gridEl.appendChild(img);
+    added++;
+    badge.textContent = `shoot: loaded ${added}`;
   }
 
-  const base = `content/${cat}/${slug}/`;
+  if(titleEl && !titleEl.textContent){
+    titleEl.textContent = slug;
+  }
 
-  // ✅ 01.jpg, 02.jpg... 자동 스캔
-  // (확장자 jpg만 쓰는 전제. png/webp도 쓰면 알려줘.)
-  for(let i = 1; i <= 199; i++){
-    const name = pad2(i);
-    const src = `${base}${name}.jpg`;
-
-    try{
-      const img = await loadImage(src);
-      img.alt = `${slug} ${name}`;
-      img.className = "detailImg";
-      gridEl.appendChild(img);
-    }catch(e){
-      // i번째가 없으면 종료
-      break;
-    }
+  if(added === 0){
+    badge.textContent = "shoot: loaded 0 (check filename/JS)";
+    if(titleEl) titleEl.innerHTML = `${slug}<div style="font-size:12px;opacity:.7;margin-top:6px;">0 images loaded</div>`;
   }
 }
 
