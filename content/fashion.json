@@ -6,6 +6,13 @@
       "subtitle": "ORE 2026",
       "cover": "cover.jpg",
       "count": 4
+    },
+    {
+      "slug": "sandsound",
+      "title": "SANDSOUND",
+      "subtitle": "SANDSOUND 2026",
+      "cover": "cover.jpg",
+      "count": 2
     }
   ]
 }
