@@ -1,3 +1,24 @@
+(function autoVersionAssets(){
+
+  // 빌드 타임스탬프 기반 버전 (자동 갱신)
+  const version = "v=" + Date.now();
+
+  // CSS 다시 로드
+  const link = document.getElementById("main-style");
+  if(link){
+    const href = link.getAttribute("href").split("?")[0];
+    link.setAttribute("href", href + "?" + version);
+  }
+
+  // shoot.js도 자동 갱신 (필요하면)
+  const shootScript = document.querySelector('script[src*="shoot.js"]');
+  if(shootScript){
+    const src = shootScript.getAttribute("src").split("?")[0];
+    shootScript.setAttribute("src", src + "?" + version);
+  }
+
+})();
+
 async function injectHeader(){
   const host = document.querySelector("#site-header");
   if(!host) return;
