@@ -1,3 +1,11 @@
 {
-  "shoots": []
+  "shoots": [
+    {
+      "slug": "ore",
+      "title": "ORE",
+      "subtitle": "ORE 2026",
+      "cover": "cover.jpg",
+      "count": 4
+    }
+  ]
 }
