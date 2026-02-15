@@ -87,17 +87,6 @@ function enableCardLabels(){
 }
 
 
-/* =========================
-   Brand Click → Home
-   (이벤트 위임 방식)
-   ========================= */
-document.addEventListener("click", function(e){
-  const brand = e.target.closest(".brand");
-  if(!brand) return;
-
-  window.location.href = "./";
-});
-
 
 /* =========================
    Init
