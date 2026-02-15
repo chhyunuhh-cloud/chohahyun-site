@@ -69,19 +69,7 @@ a:hover{opacity:.85}
   border: 1px solid rgba(0,0,0,.08);
   box-shadow: 0 10px 24px rgba(0,0,0,.10);
 }
-.brand-sub{
-  display:block;
-  font-size:12px;
-  letter-spacing:0.26em;
-  opacity:.75;
-}
-.brand-main{
-  display:block;
-  margin-top:6px;
-  font-size:12px;
-  letter-spacing:0.26em;
-  font-weight:600;
-}
+
 
 /* ✅ PC에서 프레임 안쪽으로 브랜드를 끌어오기 */
 @media (min-width: 641px){
