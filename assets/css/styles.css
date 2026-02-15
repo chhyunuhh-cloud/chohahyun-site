@@ -1,0 +1,144 @@
+:root{
+  --bg:#ffffff;
+  --fg:#111111;
+  --muted:#666666;
+  --line:#e9e9e9;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  --brandLeft:3.3vw;
+  --brandBottom:8vh;
+  --menuBtnTop:22px;
+  --menuBtnRight:22px;
+  --gridW:min(78vw, 940px);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);letter-spacing:0.02em}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.8}
+
+/* Brand (always visible) */
+.brand{
+  position:fixed;
+  left:var(--brandLeft);
+  bottom:var(--brandBottom);
+  z-index:99999;
+  text-transform:uppercase;
+  line-height:1.15;
+  pointer-events:none;
+}
+.brand-sub{display:block;font-size:12px;letter-spacing:0.26em;opacity:.75}
+.brand-main{display:block;margin-top:6px;font-size:28px;letter-spacing:0.18em;font-weight:600}
+
+/* Hamburger */
+.menu-toggle{
+  position:fixed;
+  top:var(--menuBtnTop);
+  right:var(--menuBtnRight);
+  z-index:100000;
+  border:0;
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(6px);
+  padding:6px 10px;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+
+/* Slide menu */
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+  z-index:99990;
+}
+.side-menu{
+  position:fixed;
+  top:0;
+  right:0;
+  height:100vh;
+  width:min(78vw, 320px);
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border-left:1px solid rgba(0,0,0,.08);
+  transform:translateX(100%);
+  transition:transform .22s ease;
+  z-index:99991;
+  padding:72px 22px 24px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  font-size:13px;
+}
+.side-menu a{opacity:.85}
+.side-menu a.active{opacity:1}
+.side-menu a:hover{opacity:1}
+
+body.menu-open .menu-overlay{opacity:1;pointer-events:auto}
+body.menu-open .side-menu{transform:translateX(0)}
+
+.page{min-height:100vh;position:relative;z-index:1}
+.main{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:14vh 0 18vh;
+}
+@media (max-width:640px){
+  :root{--brandLeft:5vw;--brandBottom:22px;--gridW:min(86vw, 560px)}
+  .brand-main{font-size:24px;letter-spacing:0.16em}
+  .brand-sub{font-size:11px}
+  .main{padding-bottom:28vh}
+}
+
+.gridWrap{width:var(--gridW)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media (max-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+
+.card{
+  position:relative;
+  border:1px solid var(--line);
+  background:#fafafa;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  cursor:pointer;
+  display:block;
+}
+.card img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.01)}
+.card:hover img{transform:scale(1.05);transition:transform .35s ease}
+
+/* overlay label */
+.card-label{
+  position:absolute;inset:0;display:grid;place-items:center;
+  text-align:center;padding:12px;
+  opacity:0;transition:opacity .16s ease;
+  font-size:12px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(0,0,0,.78);background:rgba(255,255,255,.38);
+}
+.card:hover .card-label{opacity:1}
+.card.show-label .card-label{opacity:1}
+
+.arrows{margin-top:18px;display:flex;align-items:center;justify-content:space-between;color:var(--muted);letter-spacing:0.08em;font-size:14px;user-select:none}
+.arrowBtn{cursor:pointer;padding:6px 10px}
+.arrowBtn:hover{color:var(--fg)}
+
+/* Detail */
+.detailWrap{width:var(--gridW)}
+.detailTitle{text-transform:uppercase;letter-spacing:0.14em;font-size:13px;color:var(--muted);margin-bottom:14px}
+.detailGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:640px){.detailGrid{grid-template-columns:1fr;gap:12px}}
+.detailGrid img{width:100%;border:1px solid var(--line);display:block}
+.backLink{display:inline-block;margin-top:16px;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+.backLink:hover{color:var(--fg)}
+
+/* Contact */
+.contactBlock{width:var(--gridW);font-size:18px;letter-spacing:0.08em;line-height:1.6;white-space:pre-line}
+.contactBlock a{border-bottom:1px solid rgba(17,17,17,.25)}
+.contactBlock a:hover{border-bottom-color:rgba(17,17,17,.9)}
