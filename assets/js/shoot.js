@@ -1,77 +1,86 @@
-function qs(sel){ return document.querySelector(sel); }
-function pad(n){ return String(n).padStart(2,"0"); }
+async function loadJSON(path){
+  const res = await fetch(path, { cache: "no-store" });
+  if(!res.ok) throw new Error(`Failed to load ${path}`);
+  return await res.json();
+}
+function qs(sel, el=document){ return el.querySelector(sel); }
+function pad2(n){ return String(n).padStart(2, "0"); }
 
-function badge(text){
-  const el = document.createElement("div");
-  el.style.position = "fixed";
-  el.style.left = "10px";
-  el.style.bottom = "10px";
-  el.style.zIndex = "999999";
-  el.style.background = "rgba(0,0,0,.8)";
-  el.style.color = "#fff";
-  el.style.padding = "8px 10px";
-  el.style.borderRadius = "10px";
-  el.style.fontSize = "12px";
-  el.style.lineHeight = "1.35";
-  el.textContent = text;
-  document.body.appendChild(el);
-  return el;
+function loadImage(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
-function init(){
-  const b = badge("shoot.js: start");
+async function tryLoadAny(base, name){
+  const exts = ["jpg","JPG","jpeg","JPEG","png","PNG","webp","WEBP"];
+  for(const ext of exts){
+    const src = `${base}${name}.${ext}`;
+    try{
+      return await loadImage(src);
+    }catch(e){}
+  }
+  return null;
+}
 
+async function initShoot(){
   const params = new URLSearchParams(location.search);
   const cat = params.get("cat") || params.get("category");
   const slug = params.get("slug");
 
-  const grid = qs("#detailGrid");
-  const title = qs("#detailTitle");
-  const back = qs("#backLink");
+  const titleEl = qs("#detailTitle");
+  const gridEl  = qs("#detailGrid");
+  const backEl  = qs("#backLink");
 
-  b.textContent = `shoot.js: params\ncat=${cat}\nslug=${slug}`;
-
-  if(!grid){
-    b.textContent += `\n\n❌ #detailGrid 없음`;
-    return;
-  }
+  if(backEl && cat) backEl.href = `${cat}.html`;
+  if(!gridEl) return;
 
   if(!cat || !slug){
-    if(title) title.textContent = "missing cat/slug";
-    b.textContent += `\n\n❌ URL에 ?cat=...&slug=... 필요`;
+    if(titleEl) titleEl.textContent = "Invalid link (missing cat/slug)";
     return;
   }
 
-  if(back) back.href = `${cat}.html`;
-  if(title) title.textContent = slug;
+  // JSON에서 shoot 찾기 (title/subtitle/count)
+  let shoot = null;
+  try{
+    const data = await loadJSON(`content/${cat}.json`);
+    const shoots = Array.isArray(data) ? data : (data.shoots || []);
+    shoot = shoots.find(s => s.slug === slug) || null;
+  }catch(e){}
+
+  if(titleEl){
+    titleEl.innerHTML = `
+      <div class="detailTitleMain">${shoot?.title || slug}</div>
+      ${shoot?.subtitle ? `<div class="detailTitleSub">${shoot.subtitle}</div>` : ""}
+    `;
+  }
 
   const base = `content/${cat}/${slug}/`;
-  const first = `${base}01.jpg`;
-  b.textContent += `\n\nfirst:\n${first}`;
 
-  let ok = 0, fail = 0;
+  // ✅ count가 있으면 그 개수만큼만 정확히 로드
+  const max = Number.isFinite(Number(shoot?.count)) ? Number(shoot.count) : 0;
 
-  // 01~30만 테스트 (너무 길게 말고)
-  for(let i=1;i<=30;i++){
-    const name = pad(i);
-    const img = document.createElement("img");
+  if(max <= 0){
+    if(titleEl) titleEl.innerHTML += `<div style="font-size:12px;opacity:.7;margin-top:6px;">count가 없어 이미지를 불러오지 않았어요 (JSON에 count 추가)</div>`;
+    return;
+  }
+
+  for(let i=1; i<=max; i++){
+    const name = pad2(i);
+    const img = await tryLoadAny(base, name);
+
+    // count만큼은 “있어야” 하는 전제라, 없으면 빈칸 대신 그냥 건너뜀
+    if(!img) continue;
+
+    img.alt = `${slug} ${name}`;
     img.className = "detailImg";
-    img.loading = "lazy";
-    img.src = `${base}${name}.jpg`;
-
-    img.onload = () => {
-      ok++;
-      b.textContent = `shoot.js: loading...\ncat=${cat}\nslug=${slug}\nok=${ok} fail=${fail}\nfirst=${first}`;
-    };
-    img.onerror = () => {
-      fail++;
-      // 없는 파일이면 DOM에서 제거 (깨진 아이콘 방지)
-      img.remove();
-      b.textContent = `shoot.js: loading...\ncat=${cat}\nslug=${slug}\nok=${ok} fail=${fail}\nfirst=${first}`;
-    };
-
-    grid.appendChild(img);
+    gridEl.appendChild(img);
   }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+window.addEventListener("DOMContentLoaded", initShoot);
