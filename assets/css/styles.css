@@ -252,6 +252,7 @@ body.menu-open .side-menu{transform:translateX(0)}
   font-size: 18px;
   letter-spacing: 0.08em;
   line-height: 1.6;
+  opericy: 0.5;
   white-space: pre-line;
 }
 .contactBlock a:hover{
