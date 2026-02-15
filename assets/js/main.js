@@ -77,3 +77,13 @@ document.addEventListener("DOMContentLoaded", function(){
     location.href = "index.html"; // 홈 파일명이 다르면 여기만 바꾸면 됨
   });
 });
+
+document.addEventListener("DOMContentLoaded", function(){
+  var brand = document.querySelector(".brand");
+  if(!brand) return;
+
+  brand.addEventListener("click", function(){
+    window.location.href = "./";  
+  });
+});
+
