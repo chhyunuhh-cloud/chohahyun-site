@@ -371,3 +371,6 @@ img {
 ::selection {
   background: transparent;
 }
+.arrows{
+  display: none !important;
+}
