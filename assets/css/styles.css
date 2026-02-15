@@ -57,8 +57,9 @@ a:hover{opacity:.85}
   z-index: 99999;
   text-transform: uppercase;
   line-height: 1.15;
-  pointer-events: none;
-
+  pointer-events: auto !important;
+  cursor: pointer;
+  
   /* ✅ readability background */
   padding: 10px 12px;
   border-radius: 14px;
