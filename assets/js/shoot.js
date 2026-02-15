@@ -1,65 +1,89 @@
+async function loadJSON(path){
+  const res = await fetch(path, { cache: "no-store" });
+  if(!res.ok) throw new Error(`Failed to load ${path}`);
+  return await res.json();
+}
 function qs(sel, el=document){ return el.querySelector(sel); }
 function pad2(n){ return String(n).padStart(2, "0"); }
 
-function debugBadge(text){
-  const el = document.createElement("div");
-  el.style.position = "fixed";
-  el.style.left = "10px";
-  el.style.bottom = "10px";
-  el.style.zIndex = "99999";
-  el.style.background = "rgba(0,0,0,.8)";
-  el.style.color = "#fff";
-  el.style.padding = "6px 8px";
-  el.style.borderRadius = "8px";
-  el.style.fontSize = "12px";
-  el.textContent = text;
-  document.body.appendChild(el);
-  return el;
+function loadImage(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function tryLoadAny(base, name){
+  const exts = ["jpg","JPG","jpeg","JPEG","png","PNG","webp","WEBP"];
+  for(const ext of exts){
+    const src = `${base}${name}.${ext}`;
+    try{
+      const img = await loadImage(src);
+      img.dataset.src = src;
+      return img;
+    }catch(e){}
+  }
+  return null;
 }
 
 async function initShoot(){
-  const badge = debugBadge("1: boot");
-
   const params = new URLSearchParams(location.search);
-  const cat = params.get("cat");
+  const cat = params.get("cat") || params.get("category");
   const slug = params.get("slug");
 
-  badge.textContent = `2: cat=${cat} slug=${slug}`;
+  const titleEl = qs("#detailTitle");
+  const gridEl  = qs("#detailGrid");
+  const backEl  = qs("#backLink");
 
+  if(backEl && cat) backEl.href = `${cat}.html`;
+  if(!gridEl) return;
   if(!cat || !slug){
-    badge.textContent = "❌ missing params";
+    if(titleEl) titleEl.textContent = "Invalid link (missing cat/slug)";
     return;
   }
 
-  const gridEl = qs("#detailGrid");
-  if(!gridEl){
-    badge.textContent = "❌ no #detailGrid";
-    return;
-  }
+  // shoot 정보에서 title/subtitle/count 가져오기
+  let shoot = null;
+  try{
+    const data = await loadJSON(`content/${cat}.json`);
+    const shoots = Array.isArray(data) ? data : (data.shoots || []);
+    shoot = shoots.find(s => s.slug === slug) || null;
+  }catch(e){}
 
-  badge.textContent = "3: start scan";
+  if(titleEl){
+    titleEl.innerHTML = `
+      <div class="detailTitleMain">${shoot?.title || slug}</div>
+      ${shoot?.subtitle ? `<div class="detailTitleSub">${shoot.subtitle}</div>` : ""}
+    `;
+  }
 
   const base = `content/${cat}/${slug}/`;
+
+  // ✅ count가 있으면 그 개수만큼만 로드
+  const max = Number.isFinite(Number(shoot?.count)) ? Number(shoot.count) : 199;
+
   let added = 0;
-
-  for(let i=1;i<=20;i++){
+  for(let i=1; i<=max; i++){
     const name = pad2(i);
-    const src = `${base}${name}.jpg`;
+    const img = await tryLoadAny(base, name);
 
-    try{
-      const img = new Image();
-      img.src = src;
-      img.className = "detailImg";
-      img.onload = () => {};
-      gridEl.appendChild(img);
-      added++;
-      badge.textContent = `4: appended ${added}`;
-    }catch(e){
-      break;
-    }
+    // count 모드일 때는 중간 누락이 있어도 계속 진행하도록 "skip"
+    if(!img) continue;
+
+    img.alt = `${slug} ${name}`;
+    img.className = "detailImg";
+    gridEl.appendChild(img);
+    added++;
   }
 
-  badge.textContent = `5: done ${added}`;
+  // count가 없고 added==0이면 안내
+  if(!shoot?.count && added === 0 && titleEl){
+    titleEl.innerHTML += `<div style="font-size:12px;opacity:.7;margin-top:6px;">No images found</div>`;
+  }
 }
 
 window.addEventListener("DOMContentLoaded", initShoot);
