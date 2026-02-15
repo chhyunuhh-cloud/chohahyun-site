@@ -1,32 +1,50 @@
-async function loadJSON(path){
-  const res = await fetch(path, {cache:"no-store"});
-  if(!res.ok) throw new Error(`Failed to load ${path}`);
-  return await res.json();
-}
 function qs(sel, el=document){ return el.querySelector(sel); }
-function getParams(){
-  const sp = new URLSearchParams(location.search);
-  return { cat: sp.get("cat") || "beauty", slug: sp.get("slug") || "" };
+
+function pickContainer(){
+  // shoot.html에서 이미지 붙일 곳 후보들
+  return qs("#images") || qs("#photos") || qs("#grid") || qs(".shoot") || qs("main") || document.body;
 }
-async function initShoot(){
-  const {cat, slug} = getParams();
-  const data = await loadJSON(`content/${cat}.json`);
-  const shoots = data.shoots || [];
-  const shoot = shoots.find(s=>s.slug === slug) || shoots[0];
-  if(!shoot) return;
 
-  qs("#detailTitle").textContent = shoot.title || cat;
-
-  const grid = qs("#detailGrid");
-  (shoot.images || []).forEach(src=>{
-    const img = document.createElement("img");
+function loadImage(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
     img.loading = "lazy";
-    img.alt = shoot.title || "";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
     img.src = src;
-    grid.appendChild(img);
   });
-
-  const map = {beauty:"beauty.html", fashion:"fashion.html", personal:"personal.html"};
-  qs("#backLink").href = map[cat] || "beauty.html";
 }
+
+function pad2(n){ return String(n).padStart(2, "0"); }
+
+async function initShoot(){
+  const params = new URLSearchParams(location.search);
+  const cat = params.get("cat") || params.get("category");
+  const slug = params.get("slug");
+
+  if(!cat || !slug){
+    console.error("Missing query params:", { cat, slug, search: location.search });
+    return;
+  }
+
+  const container = pickContainer();
+  const base = `content/${cat}/${slug}/`;
+
+  // 01.jpg ~ 99.jpg
+  for(let i = 1; i <= 99; i++){
+    const name = pad2(i);
+    const src = `${base}${name}.jpg`;
+
+    try{
+      const img = await loadImage(src);
+      img.alt = `${slug} ${name}`;
+      img.className = "shoot-img";
+      container.appendChild(img);
+    }catch(e){
+      // i번째가 없으면 종료
+      break;
+    }
+  }
+}
+
 window.addEventListener("DOMContentLoaded", initShoot);
