@@ -290,7 +290,7 @@ body.menu-open .side-menu{transform:translateX(0)}
 
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
 
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.80);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
