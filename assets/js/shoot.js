@@ -84,3 +84,5 @@ async function initShoot(){
 }
 
 window.addEventListener("DOMContentLoaded", initShoot);
+if(window.__shootPing) window.__shootPing("shoot.js started ✅");
+
