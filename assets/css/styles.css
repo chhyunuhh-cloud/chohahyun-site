@@ -298,13 +298,7 @@ body.menu-open .side-menu{transform:translateX(0)}
 .brand-sub{display:block;font-size:12px;letter-spacing:0.26em}
 .brand-main{display:block;margin-top:6px;font-size:12px;letter-spacing:0.26em}
 
-/* PC에서 모바일 프레임(430px) 안쪽으로만 바가 보이게 */
-@media (min-width: 641px){
-  .menu-toggle{
-    left: calc(50% + (var(--frameW) / 2) - var(--menuBtnRight));
-    right: auto; /* 기존 right:22px 무력화 */
-  }
-}
+
 /* ===== FINAL OVERRIDES ===== */
 
 /* 1) 하단 바 위 선 제거 + 클릭 가능 */
@@ -370,4 +364,20 @@ img {
 }
 .arrows{
   display: none !important;
+}
+
+/* ===== PC에서 모바일 프레임 기준 정렬 ===== */
+@media (min-width: 641px){
+
+  /* 브랜드: 프레임 왼쪽 안쪽 16px */
+  .brand{
+    left: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    right: auto !important;
+  }
+
+  /* 햄버거: 프레임 오른쪽 안쪽 16px */
+  .menu-toggle{
+    right: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    left: auto !important;
+  }
 }
