@@ -83,3 +83,16 @@ function init(){
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+const params = new URLSearchParams(location.search);
+const cat = params.get("cat"); // beauty / fashion / personal
+
+const back = document.getElementById("backlink");
+
+if (back) {
+  if (cat) {
+    back.href = `${cat}.html`;
+  } else {
+    back.href = "index.html"; // 예외 대비
+  }
+}
