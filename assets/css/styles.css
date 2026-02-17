@@ -465,3 +465,102 @@ img {
   object-fit: contain;
   display:block;
 }
+
+/* =========================
+   SHOOT: Page-turn Viewer
+   ========================= */
+
+.viewer{
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 180px); /* 너 헤더/타이틀 높이에 맞춰 조절 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageTurn{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+  overflow: hidden;
+}
+
+/* 기본 이미지(바닥) */
+#pageImg{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 넘기는 페이지(오버레이) */
+#flipImg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* 넘김 효과 */
+#flipImg.turn-next{
+  display: block;
+  transform-origin: right center;
+  animation: pageTurnNext 520ms ease-in-out forwards;
+}
+@keyframes pageTurnNext{
+  0%   { transform: rotateY(0deg);   filter: brightness(1);   }
+  40%  { transform: rotateY(-65deg); filter: brightness(.90); }
+  100% { transform: rotateY(-140deg); filter: brightness(.80); opacity: 0.0; }
+}
+
+#flipImg.turn-prev{
+  display: block;
+  transform-origin: left center;
+  animation: pageTurnPrev 520ms ease-in-out forwards;
+}
+@keyframes pageTurnPrev{
+  0%   { transform: rotateY(0deg);   filter: brightness(1);   }
+  40%  { transform: rotateY(65deg);  filter: brightness(.90); }
+  100% { transform: rotateY(140deg); filter: brightness(.80); opacity: 0.0; }
+}
+
+/* 좌우 화살표 */
+.nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.nav.prev{ left: 14px; }
+.nav.next{ right: 14px; }
+
+.nav:disabled{
+  opacity: .25;
+  cursor: default;
+}
+
+/* 페이지 표시 */
+.pager{
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: .8;
+}
+
+/* 기존 grid는 숨김(혹시 hidden 속성 제거해도 이걸로 안 보이게) */
+.detailGrid{ display:none !important; }
