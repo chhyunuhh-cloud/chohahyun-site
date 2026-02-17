@@ -383,3 +383,29 @@ img {
     left: auto !important;
   }
 }
+
+
+/* === Shoot detail: swipe slider (scroll-snap) === */
+.detailGrid{
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  gap: 0;
+
+  /* 높이는 너 레이아웃에 맞춰 조절 */
+  height: calc(100vh - 180px);
+}
+.detailGrid::-webkit-scrollbar{ display:none; }
+
+/* shoot.js가 #detailGrid 안에 img를 그냥 append 한다는 전제 */
+.detailGrid img{
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  object-fit: contain; /* 꽉 채우고 자르려면 cover */
+  display: block;
+}
