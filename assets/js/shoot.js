@@ -83,10 +83,3 @@ function init(){
 }
 
 document.addEventListener("DOMContentLoaded", init);
-
-const backBtn = document.getElementById("backBtn");
-if(backBtn){
-  backBtn.addEventListener("click", () => {
-    history.back();
-  });
-}
