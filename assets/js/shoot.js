@@ -54,6 +54,7 @@ function init(){
   var prevBtn = qs("#prevBtn");
   var nextBtn = qs("#nextBtn");
   var pager  = qs("#pager");
+  var pageTurn = qs(".pageTurn"); // 스와이프 영역
 
   var title = qs("#detailTitle");
   var back  = qs("#backlink");
@@ -104,6 +105,15 @@ function init(){
     updateUI();
   }
 
+  /**
+   * ✅ 프리미엄 전환:
+   * - flipImg에 "이전 이미지"를 올리고 빠르게 페이드아웃
+   * - pageImg는 "새 이미지"로 바꾸고 살짝 들어오는 모션(선택)
+   *
+   * CSS 전제:
+   * - pageImg/flipImg가 absolute로 겹쳐져 있고,
+   * - flipImg.is-fading { transition: opacity ... } 같은 스타일이 있음
+   */
   function turn(dir){
     if(turning) return;
     if(!urls.length) return;
@@ -113,29 +123,36 @@ function init(){
 
     turning = true;
 
-    // 현재 페이지를 flipImg에 올리고 넘김 애니메이션
-    flipImg.classList.remove("turn-next", "turn-prev");
-    flipImg.style.display = "block";
+    // 이전 상태 정리
+    flipImg.classList.remove("is-fading");
+    pageImg.classList.remove("is-enter", "is-enter-prev");
+
+    // 1) flipImg = 현재(기존) 이미지, 이걸 사라지게
     flipImg.src = urls[idx];
+    flipImg.style.opacity = "1";
 
-    // 애니 시작
-    flipImg.classList.add(dir > 0 ? "turn-next" : "turn-prev");
+    // 강제 리플로우로 transition 트리거 안정화
+    flipImg.offsetHeight;
 
-    // 중간쯤에 실제 페이지를 다음 이미지로 교체
+    // 2) pageImg = 다음(새) 이미지로 교체 + 들어오는 모션
+    idx = nextIndex;
+    pageImg.src = urls[idx];
+    pageImg.classList.add(dir > 0 ? "is-enter" : "is-enter-prev");
+
+    // 3) 기존 이미지는 페이드아웃
+    flipImg.classList.add("is-fading");
+
+    updateUI();
+
+    // 4) 전환 끝나면 flipImg 숨김 + 정리
     setTimeout(function(){
-      idx = nextIndex;
-      pageImg.src = urls[idx];
-      updateUI();
-    }, 230);
-
-    // 애니 끝나면 flipImg 정리
-    setTimeout(function(){
-      flipImg.classList.remove("turn-next", "turn-prev");
-      flipImg.style.display = "none";
+      flipImg.classList.remove("is-fading");
+      flipImg.style.opacity = "0";
       turning = false;
-    }, 560);
+    }, 360);
   }
 
+  // 버튼 (PC/모바일 공통)
   if(prevBtn) prevBtn.addEventListener("click", function(){ turn(-1); });
   if(nextBtn) nextBtn.addEventListener("click", function(){ turn(1); });
 
@@ -144,6 +161,38 @@ function init(){
     if(e.key === "ArrowLeft")  turn(-1);
     if(e.key === "ArrowRight") turn(1);
   });
+
+  // ✅ 모바일 스와이프(좌/우)로 넘김
+  // - 세로 스크롤과 충돌 줄이기 위해 dx/dy 조건 적용
+  if(pageTurn){
+    var sx = 0, sy = 0, tracking = false;
+
+    pageTurn.addEventListener("touchstart", function(e){
+      if(!e.touches || e.touches.length !== 1) return;
+      tracking = true;
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+    }, { passive:true });
+
+    pageTurn.addEventListener("touchend", function(e){
+      if(!tracking) return;
+      tracking = false;
+
+      var t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+      if(!t) return;
+
+      var dx = t.clientX - sx;
+      var dy = t.clientY - sy;
+
+      // 좌우 스와이프만 인식
+      if(Math.abs(dx) < 40) return;
+      if(Math.abs(dx) < Math.abs(dy) * 1.2) return;
+
+      // 왼쪽 스와이프 = 다음 / 오른쪽 스와이프 = 이전
+      if(dx < 0) turn(1);
+      else turn(-1);
+    }, { passive:true });
+  }
 
   // 시작 상태
   setStatus("LOADING...");
@@ -196,7 +245,11 @@ function init(){
           if(url){
             console.log("[shoot] OK", name, url);
             urls.push(url);
+
+            // 첫 장 로드되면 즉시 보여주기
             if(urls.length === 1){
+              // 초기 상태: flipImg는 안 보이게
+              flipImg.style.opacity = "0";
               show(0);
             } else {
               updateUI();
