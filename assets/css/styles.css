@@ -150,4 +150,238 @@ body.menu-open .side-menu{transform:translateX(0)}
 .card{
   position: relative;
   border: 0;               /* ✅ 테두리 제거 */
-  bord
+  border-radius: 0;        /* ✅ 라운딩 제거 */
+  background: transparent;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+}
+
+.card img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.01);
+}
+
+.card:hover img{
+  transform: scale(1.05);
+  transition: transform .35s ease;
+}
+
+/* label overlay */
+.card-label{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:12px;
+  opacity:0;
+  transition:opacity .16s ease;
+  font-size:12px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,.78);
+  background:rgba(255,255,255,.38);
+}
+.card:hover .card-label{opacity:1}
+.card.show-label .card-label{opacity:1}
+
+/* (이전 화살표 UI는 사용 안 함) */
+.arrows{ display:none !important; }
+
+/* ====== Detail (shoot) base ====== */
+.detailWrap{
+  width: 100%;
+  padding: 16px;
+}
+
+/* 너가 원래 숨겨둔 상태 유지 */
+.detailTitle{ display:none; }
+
+/* BACK TO LIST (상단 고정) */
+.backlink{
+  display:inline-block;
+  margin-bottom: 10px;
+  font-size:13px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 100001;
+}
+.backlink:hover{ color:var(--fg); }
+
+/* ====== Contact ====== */
+.contactBlock{
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  opacity: 0.5;
+  white-space: pre-line;
+}
+.contactBlock a:hover{
+  border-bottom-color: rgba(17,17,17,.9);
+}
+
+/* ====== Mobile tweaks ====== */
+@media (max-width:640px){
+  .brand-main{font-size:12px;letter-spacing:0.26em}
+  .brand-sub{font-size:12px}
+  .main{padding-bottom:28vh}
+}
+
+/* ===== PC에서 모바일 프레임 기준 정렬 ===== */
+@media (min-width: 641px){
+  /* 브랜드: 프레임 왼쪽 안쪽 16px */
+  .brand{
+    left: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    right: auto !important;
+  }
+
+  /* 햄버거: 프레임 오른쪽 안쪽 16px */
+  .menu-toggle{
+    right: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    left: auto !important;
+  }
+
+  /* BACK LINK도 프레임 기준으로 */
+  .backlink{
+    left: calc(50% - (var(--frameW) / 2) + 16px) !important;
+  }
+}
+
+/* =========================
+   SHOOT: Page-turn Viewer (FINAL)
+   ========================= */
+
+.viewer{
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 180px); /* 필요하면 180px만 조절 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageTurn{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+  overflow: hidden;
+
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+}
+
+/* 기본 이미지 */
+#pageImg{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+
+  border: 0 !important;
+  outline: 0 !important;
+}
+
+/* 넘김 오버레이 이미지 */
+#flipImg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* 넘김 효과 */
+#flipImg.turn-next{
+  display: block;
+  transform-origin: right center;
+  animation: pageTurnNext 520ms ease-in-out forwards;
+}
+@keyframes pageTurnNext{
+  0%   { transform: rotateY(0deg);    filter: brightness(1); }
+  40%  { transform: rotateY(-65deg);  filter: brightness(.9); }
+  100% { transform: rotateY(-140deg); filter: brightness(.8); opacity: 0; }
+}
+
+#flipImg.turn-prev{
+  display: block;
+  transform-origin: left center;
+  animation: pageTurnPrev 520ms ease-in-out forwards;
+}
+@keyframes pageTurnPrev{
+  0%   { transform: rotateY(0deg);   filter: brightness(1); }
+  40%  { transform: rotateY(65deg);  filter: brightness(.9); }
+  100% { transform: rotateY(140deg); filter: brightness(.8); opacity: 0; }
+}
+
+/* 화살표: 원/배경 제거 + 크게 */
+.nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  width: auto !important;
+  height: auto !important;
+  padding: 6px 12px;
+
+  color: #111;        /* 흰 배경 기준 */
+  font-size: 44px;
+  line-height: 1;
+  cursor: pointer;
+}
+.nav.prev{ left: 6px; }
+.nav.next{ right: 6px; }
+
+.nav:disabled{ opacity: .2; cursor: default; }
+
+/* 페이지 표시 */
+.pager{
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  opacity: .7;
+}
+
+/* detailGrid는 더 이상 사용 안 함 */
+.detailGrid{ display:none !important; }
+
+/* ====== Tap/Selection clean ====== */
+*{ -webkit-tap-highlight-color: transparent; }
+
+a:active,
+button:active,
+.card:active,
+.brand:active,
+.menu-toggle:active{
+  background: transparent !important;
+}
+
+img{ -webkit-touch-callout: none; }
+::selection{ background: transparent; }
