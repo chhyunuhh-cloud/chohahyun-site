@@ -409,3 +409,59 @@ img {
   object-fit: contain; /* 꽉 채우고 자르려면 cover */
   display: block;
 }
+
+/* === Shoot detail slider: force override === */
+#detailGrid.detailGrid{
+  display: flex !important;
+  flex-direction: row !important;
+
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+  gap: 0 !important;
+
+  /* 터치/스와이프 허용 */
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+
+  /* 높이: 너 레이아웃에 맞춰 조절 */
+  height: calc(100vh - 180px) !important;
+}
+#detailGrid.detailGrid::-webkit-scrollbar{ display:none; }
+
+/* detailGrid 안에 img가 직접 들어오는 경우 */
+#detailGrid.detailGrid > img{
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+
+  scroll-snap-align: start !important;
+  object-fit: contain;
+  display: block;
+}
+
+/* 만약 구조가 <a><img></a> 이거나 <div><img></div> 라면 이것도 같이 커버 */
+#detailGrid.detailGrid > a,
+#detailGrid.detailGrid > div{
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  scroll-snap-align: start !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+#detailGrid.detailGrid > a img,
+#detailGrid.detailGrid > div img{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  display:block;
+}
