@@ -1,32 +1,36 @@
 function qs(sel){ return document.querySelector(sel); }
 function pad(n){ return String(n).padStart(2,"0"); }
 
-var VER = "202602152"; // 네 버전 유지
+var VER = "202602152"; // 캐시 버전 유지
 
 function sanitizeCat(cat){
   if(!cat) return "";
   return String(cat).replace(/\.html$/i, "");
 }
 
-function loadJSON(path, ok){
+function loadJSON(path, ok, fail){
   fetch(path + "?v=" + encodeURIComponent(VER), { cache: "no-store" })
     .then(function(res){
-      if(!res.ok) throw new Error();
+      if(!res.ok) throw new Error("HTTP " + res.status);
       return res.json();
     })
     .then(ok)
-    .catch(function(){});
+    .catch(function(err){
+      if(fail) fail(err);
+    });
 }
 
 /**
  * base + name + .ext 들을 순서대로 시도해서
- * "실제로 로드되는" 첫 URL을 callback(url)로 반환.
- * 실패하면 callback(null)
+ * "실제로 로드되는" 첫 URL을 cb(url)로 반환.
+ * 실패하면 cb(null)
  */
 function resolveImageURL(base, name, exts, cb){
   var i = 0;
+
   function tryNext(){
     if(i >= exts.length){ cb(null); return; }
+
     var ext = exts[i++];
     var url = base + name + "." + ext + "?v=" + encodeURIComponent(VER);
 
@@ -35,6 +39,7 @@ function resolveImageURL(base, name, exts, cb){
     test.onerror = function(){ tryNext(); };
     test.src = url;
   }
+
   tryNext();
 }
 
@@ -43,17 +48,20 @@ function init(){
   var cat = sanitizeCat(params.get("cat") || params.get("category"));
   var slug = params.get("slug");
 
-  // ✅ viewer 요소들
+  // viewer 요소들
   var pageImg = qs("#pageImg");
   var flipImg = qs("#flipImg");
   var prevBtn = qs("#prevBtn");
   var nextBtn = qs("#nextBtn");
-  var pager = qs("#pager");
+  var pager  = qs("#pager");
 
   var title = qs("#detailTitle");
-  var back = qs("#backlink"); // ⚠️ 기존 코드 #backLink 오타였음(대문자 L)
+  var back  = qs("#backlink");
 
-  if(!cat || !slug || !pageImg || !flipImg) return;
+  if(!cat || !slug || !pageImg || !flipImg){
+    console.warn("[shoot] missing params/elements", {cat:cat, slug:slug, pageImg:!!pageImg, flipImg:!!flipImg});
+    return;
+  }
 
   // BACK TO LIST 항상 cat 리스트로
   if(back) back.href = cat + ".html";
@@ -61,10 +69,20 @@ function init(){
   var base = "content/" + encodeURIComponent(cat) + "/" + encodeURIComponent(slug) + "/";
   var exts = ["jpg","jpeg","png","webp"];
 
-  // 로드된 이미지 URL들(순서 유지)
+  // 로드된 이미지 URL들
   var urls = [];
   var idx = 0;
   var turning = false;
+
+  // 상태 메시지(디버그/안내용)
+  var statusEl = document.createElement("div");
+  statusEl.style.cssText = "text-align:center;font-size:12px;letter-spacing:.08em;opacity:.7;margin-top:10px;";
+  var wrap = qs(".detailWrap");
+  if(wrap) wrap.appendChild(statusEl);
+
+  function setStatus(msg){
+    if(statusEl) statusEl.textContent = msg || "";
+  }
 
   function updateUI(){
     if(prevBtn) prevBtn.disabled = (idx <= 0);
@@ -95,7 +113,7 @@ function init(){
 
     turning = true;
 
-    // 현재 페이지를 flipImg에 올리고 넘기는 애니메이션
+    // 현재 페이지를 flipImg에 올리고 넘김 애니메이션
     flipImg.classList.remove("turn-next", "turn-prev");
     flipImg.style.display = "block";
     flipImg.src = urls[idx];
@@ -103,7 +121,7 @@ function init(){
     // 애니 시작
     flipImg.classList.add(dir > 0 ? "turn-next" : "turn-prev");
 
-    // 중간쯤에 실제 페이지를 다음 이미지로 교체(더 “책장 넘김” 같아짐)
+    // 중간쯤에 실제 페이지를 다음 이미지로 교체
     setTimeout(function(){
       idx = nextIndex;
       pageImg.src = urls[idx];
@@ -121,61 +139,84 @@ function init(){
   if(prevBtn) prevBtn.addEventListener("click", function(){ turn(-1); });
   if(nextBtn) nextBtn.addEventListener("click", function(){ turn(1); });
 
-  // (선택) 키보드 좌우키 지원(PC에서 편함)
+  // 키보드 좌우키 (PC)
   document.addEventListener("keydown", function(e){
-    if(e.key === "ArrowLeft") turn(-1);
+    if(e.key === "ArrowLeft")  turn(-1);
     if(e.key === "ArrowRight") turn(1);
   });
 
-  // JSON에서 shoot 찾고 count만큼 URL 만들기 (순서대로 안정 로드)
-  loadJSON("content/" + encodeURIComponent(cat) + ".json", function(data){
-    var shoots = Array.isArray(data) ? data : (data && data.shoots ? data.shoots : []);
-    var shoot = null;
+  // 시작 상태
+  setStatus("LOADING...");
 
-    for(var i=0; i<shoots.length; i++){
-      if(shoots[i] && shoots[i].slug === slug){ shoot = shoots[i]; break; }
-    }
+  // JSON에서 shoot 찾고 count 만큼 로드
+  loadJSON(
+    "content/" + encodeURIComponent(cat) + ".json",
+    function(data){
+      var shoots = Array.isArray(data) ? data : (data && data.shoots ? data.shoots : []);
+      var shoot = null;
 
-    // 타이틀 출력
-    if(title){
-      var main = (shoot && shoot.title) ? shoot.title : slug;
-      var sub = (shoot && shoot.subtitle) ? shoot.subtitle : "";
-      title.innerHTML =
-        '<div class="detailTitleMain">' + main + '</div>' +
-        (sub ? '<div class="detailTitleSub">' + sub + '</div>' : '');
-    }
+      for(var i=0; i<shoots.length; i++){
+        if(shoots[i] && shoots[i].slug === slug){ shoot = shoots[i]; break; }
+      }
 
-    var max = (shoot && shoot.count != null) ? parseInt(shoot.count, 10) : 0;
-    if(!max) return;
+      // 타이틀 출력(지금 CSS로 숨겨져 있어도 OK)
+      if(title){
+        var main = (shoot && shoot.title) ? shoot.title : slug;
+        var sub  = (shoot && shoot.subtitle) ? shoot.subtitle : "";
+        title.innerHTML =
+          '<div class="detailTitleMain">' + main + '</div>' +
+          (sub ? '<div class="detailTitleSub">' + sub + '</div>' : '');
+      }
 
-    // ✅ 순서 보장 + 모바일 안정 위해 "순차 로드"
-    var n = 1;
+      var max = (shoot && shoot.count != null) ? parseInt(shoot.count, 10) : 0;
 
-    function loadNext(){
-      if(n > max){
-        // 다 끝난 뒤 UI 업데이트
-        updateUI();
+      console.log("[shoot] cat=", cat, "slug=", slug, "count=", max);
+
+      if(!max){
+        setStatus("NO IMAGES (count is 0). JSON에 count가 있는지 확인해줘.");
         return;
       }
 
-      var name = pad(n);
-      resolveImageURL(base, name, exts, function(url){
-        if(url){
-          urls.push(url);
-          // 첫 이미지가 들어오자마자 바로 표시
-          if(urls.length === 1){
-            show(0);
-          } else {
-            updateUI();
-          }
-        }
-        n++;
-        loadNext();
-      });
-    }
+      var n = 1;
 
-    loadNext();
-  });
+      function loadNext(){
+        if(n > max){
+          updateUI();
+          if(!urls.length){
+            setStatus("IMAGES NOT FOUND. 파일명(01.jpg,02.jpg..) / 경로 확인 필요");
+          } else {
+            setStatus("");
+          }
+          return;
+        }
+
+        var name = pad(n);
+
+        resolveImageURL(base, name, exts, function(url){
+          if(url){
+            console.log("[shoot] OK", name, url);
+            urls.push(url);
+            if(urls.length === 1){
+              show(0);
+            } else {
+              updateUI();
+            }
+          } else {
+            console.warn("[shoot] FAIL", name, base + name + ".*");
+          }
+
+          n++;
+          loadNext();
+        });
+      }
+
+      loadNext();
+    },
+    function(err){
+      console.error("[shoot] JSON load failed:", err);
+      setStatus("JSON LOAD FAILED. content/" + cat + ".json 경로 확인 필요");
+    }
+  );
 }
 
-document.addEventListener(
+document.addEventListener("DOMContentLoaded", init);
