@@ -16,8 +16,27 @@
       <div class="detailWrap">
         <a id="backlink" class="backlink" href="#">← BACK TO LIST</a>
         <div id="detailTitle" class="detailTitle"></div>
-        <div id="detailGrid" class="detailGrid"></div>
-        
+
+        <!-- ✅ Page-turn viewer -->
+        <div class="viewer" aria-label="Image viewer">
+          <button class="nav prev" id="prevBtn" type="button" aria-label="Previous image">‹</button>
+
+          <div class="pageTurn" aria-label="Page area">
+            <!-- 실제로 보이는 이미지 -->
+            <img id="pageImg" alt="" />
+
+            <!-- 넘김 애니메이션용 오버레이 이미지(페이지 한 장이 넘어가는 느낌) -->
+            <img id="flipImg" alt="" aria-hidden="true" />
+          </div>
+
+          <button class="nav next" id="nextBtn" type="button" aria-label="Next image">›</button>
+        </div>
+
+        <!-- (선택) 페이지 인디케이터 -->
+        <div class="pager" id="pager" aria-label="Page indicator"></div>
+
+        <!-- ⚠️ 기존 슬라이드용 grid는 이제 안 씀(남겨도 되지만 화면에 안 보이게 CSS로 숨길 거야) -->
+        <div id="detailGrid" class="detailGrid" hidden></div>
       </div>
     </main>
   </div>
