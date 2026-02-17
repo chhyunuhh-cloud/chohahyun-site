@@ -476,3 +476,30 @@ img{ -webkit-touch-callout: none; }
   #flipImg.is-fading{ transition: opacity 0ms !important; }
   #pageImg.is-enter, #pageImg.is-enter-prev{ animation: none !important; }
 }
+
+/* ===== Lightbox-like viewer base ===== */
+.pageTurn{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#pageImg, #flipImg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  will-change: transform, opacity;
+  transform: translate3d(0,0,0);
+}
+
+#flipImg{
+  opacity: 0;
+  pointer-events: none;
+}
