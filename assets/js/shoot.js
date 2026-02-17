@@ -133,6 +133,8 @@ function init(){
 
     // 강제 리플로우로 transition 트리거 안정화
     flipImg.offsetHeight;
+    window.getComputedStyle(flipImg).opacity;
+
 
     // 2) pageImg = 다음(새) 이미지로 교체 + 들어오는 모션
     idx = nextIndex;
