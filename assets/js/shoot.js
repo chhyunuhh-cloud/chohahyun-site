@@ -61,8 +61,8 @@ function init(){
   // 상태 메시지(필요 없으면 나중에 지워도 됨)
   var statusEl = document.createElement("div");
   statusEl.style.cssText = "text-align:center;font-size:12px;letter-spacing:.08em;opacity:.7;margin-top:10px;";
-  var wrap = qs(".detailWrap");
-  if(wrap) wrap.appendChild(statusEl);
+  var wrapEl = qs(".detailWrap");
+  if(wrapEl) wrapEl.appendChild(statusEl);
   function setStatus(msg){ if(statusEl) statusEl.textContent = msg || ""; }
 
   // 데이터
@@ -90,6 +90,11 @@ function init(){
 
   function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
+  // ✅ 무한 루프 인덱스 래핑(음수도 안전)
+  function wrapIndex(i, n){
+    return (i % n + n) % n;
+  }
+
   function setTransform(el, x){
     el.style.transform = "translate3d(" + x + "px,0,0)";
   }
@@ -98,18 +103,17 @@ function init(){
     el.style.opacity = String(o);
   }
 
+  // ✅ 무한 루프: prev/next disabled 없음 + pager 표시 제거
   function updateUI(){
-    if(prevBtn) prevBtn.disabled = (idx <= 0);
-    if(nextBtn) nextBtn.disabled = (idx >= urls.length - 1);
-    if(pager){
-      pager.textContent = urls.length ? ((idx + 1) + " / " + urls.length) : "";
-    }
+    if(prevBtn) prevBtn.disabled = false;
+    if(nextBtn) nextBtn.disabled = false;
+    if(pager) pager.textContent = ""; // 1/4 같은 표시 없애기
   }
 
   // 현재 idx 기준으로 이미지 세팅 + 주변 프리로드
   function show(i){
     if(!urls.length) return;
-    idx = clamp(i, 0, urls.length - 1);
+    idx = wrapIndex(i, urls.length);
 
     pageImg.src = urls[idx];
     // flipImg는 기본 숨김 상태
@@ -125,9 +129,10 @@ function init(){
   }
 
   function preload(i){
-    if(i < 0 || i >= urls.length) return;
+    if(!urls.length) return;
+    var j = wrapIndex(i, urls.length);
     var im = new Image();
-    im.src = urls[i];
+    im.src = urls[j];
   }
 
   // 전환 애니 켜기/끄기
@@ -144,18 +149,9 @@ function init(){
 
     // 다음/이전 방향 결정
     var dir = (deltaX < 0) ? 1 : -1;  // 왼쪽으로 끌면 다음(+1)
-    var target = idx + dir;
 
-    // 범위를 벗어나면 고무줄 느낌(움직임 줄이기)
-    if(target < 0 || target >= urls.length){
-      deltaX = deltaX * 0.35;
-      progress = clamp(Math.abs(deltaX) / width, 0, 1);
-      // flipImg는 숨김
-      flipImg.style.opacity = "0";
-      setTransform(pageImg, deltaX);
-      setOpacity(pageImg, 1);
-      return;
-    }
+    // ✅ 무한 루프: target을 항상 wrap
+    var target = wrapIndex(idx + dir, urls.length);
 
     // flipImg에 다음/이전 이미지 깔기 (필요할 때만 src 변경)
     var needSrc = urls[target];
@@ -165,9 +161,6 @@ function init(){
     }
 
     // 레이어 위치:
-    // 현재(pageImg)는 deltaX 만큼 따라오고,
-    // 다음/이전(flipImg)는 화면 밖에서 같이 들어오게 배치
-    // (dir=1이면 다음은 오른쪽(+width)에서 들어옴? 실제론 왼쪽 드래그 -> 다음이 오른쪽에서 들어오는 느낌)
     var off = (deltaX < 0) ? width : -width; // 끌어오는 방향의 반대쪽에서 등장
     setTransform(pageImg, deltaX);
     setTransform(flipImg, deltaX + off);
@@ -180,12 +173,10 @@ function init(){
   // 스냅 전환(넘기기)
   function commit(dir){
     if(animating) return;
-    var target = idx + dir;
-    if(target < 0 || target >= urls.length) {
-      // 범위 밖: 원위치 복귀
-      cancelDrag();
-      return;
-    }
+    if(!urls.length) return;
+
+    // ✅ 무한 루프: target을 wrap (범위 체크 제거)
+    var target = wrapIndex(idx + dir, urls.length);
 
     animating = true;
     setAnim(true);
@@ -197,7 +188,6 @@ function init(){
     flipImg.setAttribute("data-src", needSrc);
     flipImg.src = needSrc;
 
-    // 현재 방향에 맞게 최종 위치로 스냅
     // dir=1(다음) => 현재는 왼쪽으로 -width로 나가고, 다음은 0으로 들어옴
     // dir=-1(이전) => 현재는 오른쪽 +width로 나가고, 이전은 0으로
     var pageEnd = (dir === 1) ? -width : width;
@@ -206,6 +196,7 @@ function init(){
     // 시작 포지션 잡고
     setTransform(flipImg, flipStart);
     setOpacity(flipImg, 0.9);
+
     // 다음 프레임에 애니 시작
     requestAnimationFrame(function(){
       setTransform(pageImg, pageEnd);
@@ -248,11 +239,8 @@ function init(){
   }
 
   // Pointer events (모바일/PC 드래그 통합)
-  // - PC는 드래그도 되고, 버튼도 됨
-  // - 모바일은 스와이프가 자연스럽게 됨
   function onDown(e){
     if(animating) return;
-    // 링크/버튼 위 드래그 등 예외 최소화
     isDown = true;
     startX = e.clientX;
     lastX = e.clientX;
@@ -285,9 +273,6 @@ function init(){
     lastX = x;
     dx = x - startX;
 
-    // 세로 스크롤 방해 최소화:
-    // pointer 기반이라 기본 스크롤과 충돌이 적고,
-    // CSS에서 touch-action: pan-y 로 잡으면 세로는 살리고 좌우 드래그만 동작 가능
     renderDrag(dx);
   }
 
@@ -324,14 +309,12 @@ function init(){
   });
 
   // pointer 이벤트 바인딩
-  // (모바일: touch도 pointer로 들어옴)
   pageTurn.style.touchAction = "pan-y"; // 세로 스크롤은 살리고, 좌우 드래그는 우리가 처리
   pageTurn.addEventListener("pointerdown", onDown);
   pageTurn.addEventListener("pointermove", onMove);
   pageTurn.addEventListener("pointerup", onUp);
   pageTurn.addEventListener("pointercancel", onUp);
   pageTurn.addEventListener("pointerleave", function(){
-    // 드래그 중에 영역을 벗어나면 up 처리
     if(isDown) onUp();
   });
 
