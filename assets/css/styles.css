@@ -31,6 +31,9 @@ a:hover{opacity:.85}
 .page{
   max-width: var(--frameW);
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
   background: var(--bg);
   box-shadow: 0 0 40px rgba(0,0,0,0.08);
@@ -559,12 +562,5 @@ img{ -webkit-touch-callout: none; }
 
 .hero{
   width: 100%;
-  margin-top: 100px;
 }
 
-.hero-img{
-  width: 100%;
-  height: auto;   /* 세로/가로 자유 비율 유지 */
-  display: block;
-  border-radius: 16px;
-}
