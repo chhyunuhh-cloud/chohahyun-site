@@ -1,11 +1,11 @@
 {
   "shoots": [
     {
-      "slug": "ore",
-      "title": "ORE",
-      "subtitle": "ORE 2026",
+      "slug": "beaker_1",
+      "title": "BEAKER",
+      "subtitle": "beaker_1",
       "cover": "cover.jpg",
-      "count": 4
+      "count": 9
     },
     {
       "slug": "sandsound",
