@@ -557,3 +557,14 @@ img{ -webkit-touch-callout: none; }
   .viewer .nav{ font-size: 16px; }
 }
 
+.hero{
+  width: 100%;
+  margin-top: 24px;
+}
+
+.hero-img{
+  width: 100%;
+  height: auto;   /* 세로/가로 자유 비율 유지 */
+  display: block;
+  border-radius: 16px;
+}
