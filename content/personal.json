@@ -1,3 +1,64 @@
 {
-  "shoots": []
+  "shoots": [
+    {
+      "slug": "1",
+      "cover": "cover.jpg",
+      "count": 4
+    },
+    {
+      "slug": "2",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
+      "slug": "blue",
+      "cover": "cover.jpg",
+      "count": 8
+    },
+    {
+      "slug": "chisaki",
+      "cover": "cover.jpg",
+      "count": 5
+    },
+    {
+      "slug": "kaya",
+      "cover": "cover.jpg",
+      "count": 12
+    },
+    {
+      "slug": "rcrc",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "rcrc2",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "suhyun",
+      "cover": "cover.jpg",
+      "count": 5
+    },
+    {
+      "slug": "twin",
+      "cover": "cover.jpg",
+      "count": 7
+    },
+    {
+      "slug": "yerim",
+      "cover": "cover.jpg",
+      "count": 2
+    },
+    {
+      "slug": "yujin",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "yuna",
+      "cover": "cover.jpg",
+      "count": 9
+    }
+  ]
 }
