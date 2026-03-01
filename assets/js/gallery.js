@@ -44,7 +44,7 @@ function makeCard(shoot, category){
 
   const title = document.createElement("span");
   title.className = "card-label";
-  title.textContent = shoot.title ? shoot.title;
+  title.textContent = (shoot.title && shoot.title.trim()) ? shoot.title : "";
   labelWrap.appendChild(title);
 
   if(shoot.subtitle){
