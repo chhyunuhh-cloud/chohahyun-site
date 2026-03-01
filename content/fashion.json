@@ -3,14 +3,12 @@
     {
       "slug": "beaker_1",
       "title": "BEAKER",
-      "subtitle": "beaker_1",
       "cover": "cover.jpg",
       "count": 9
     },
     {
       "slug": "sandsound",
       "title": "SANDSOUND",
-      "subtitle": "SANDSOUND 2026",
       "cover": "cover.jpg",
       "count": 2
     }
