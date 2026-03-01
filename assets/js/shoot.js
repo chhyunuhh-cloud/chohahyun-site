@@ -56,7 +56,7 @@ function init(){
   if(back) back.href = cat + ".html";
 
   var base = "content/" + encodeURIComponent(cat) + "/" + encodeURIComponent(slug) + "/";
-  var exts = ["jpg","jpeg","png","webp"];
+  var exts = ["jpg","png"];
 
   // 상태 메시지(필요 없으면 나중에 지워도 됨)
   var statusEl = document.createElement("div");
@@ -348,26 +348,38 @@ function init(){
       }
 
       var n = 1;
+      var started = false; // ✅ 첫 장 띄웠는지
 
       function loadNext(){
         if(n > max){
-          if(!urls.length){
-            setStatus("IMAGES NOT FOUND. 파일명 01.jpg, 02.jpg... / 경로 확인");
+         if(!urls.length){
+           setStatus("IMAGES NOT FOUND. 파일명 01.jpg, 02.jpg... / 경로 확인");
           } else {
             setStatus("");
-            show(0);
+            if(!started) show(0);
           }
-          return;
-        }
+        return;
+      }
 
         var name = pad(n);
+
         resolveImageURL(base, name, exts, function(url){
           if(url){
             urls.push(url);
-          }
-          n++;
-          loadNext();
-        });
+
+      // ✅ 첫 장을 찾는 순간 즉시 보여주기
+            if(!started){
+              started = true;
+              setStatus("");
+              show(0);
+              }
+            }
+
+            n++;
+
+    // ✅ 메인스레드 숨 좀 쉬게 (모바일 체감 개선)
+            setTimeout(loadNext, 0);
+          });
       }
 
       loadNext();
