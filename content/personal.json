@@ -2,12 +2,12 @@
   "shoots": [
     {
       "slug": "1",
-      "cover": "cover.jpg",
+      "cover": "cover.png",
       "count": 4
     },
     {
       "slug": "2",
-      "cover": "cover.jpg",
+      "cover": "cover.png",
       "count": 6
     },
     {
