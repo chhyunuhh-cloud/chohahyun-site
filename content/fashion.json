@@ -11,6 +11,12 @@
       "title": "SANDSOUND",
       "cover": "cover.jpg",
       "count": 2
+    },
+    {
+      "slug": "mossweek",
+      "title": "MOSSWEEK",
+      "cover": "cover.jpg",
+      "count": 11
     }
   ]
 }
