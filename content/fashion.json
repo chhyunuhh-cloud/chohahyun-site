@@ -10,13 +10,91 @@
       "slug": "sandsound",
       "title": "SANDSOUND",
       "cover": "cover.jpg",
-      "count": 2
+      "count": 10
     },
     {
       "slug": "mossweek",
       "title": "MOSSWEEK",
       "cover": "cover.jpg",
       "count": 11
+    },
+    {
+      "slug": "diagonal x finca",
+      "title": "DIAGONAL X FINCA",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
+      "slug": "islet",
+      "title": "ISLET",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
+      "slug": "maredimari",
+      "title": "MAREDIMARI",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "beaker_2",
+      "title": "BEAKER",
+      "cover": "cover.jpg",
+      "count": 7
+    },
+    {
+      "slug": "nau",
+      "title": "NAU",
+      "cover": "cover.jpg",
+      "count": 7
+    },
+    {
+      "slug": "ore",
+      "title": "ORE",
+      "cover": "cover.jpg",
+      "count": 5
+    },
+    {
+      "slug": "tannat",
+      "title": "BEAKER",
+      "cover": "cover.jpg",
+      "count": 7 
+    },
+    {
+      "slug": "beaker_3",
+      "title": "BEAKER",
+      "cover": "cover.jpg",
+      "count": 8
+    },
+    {
+      "slug": "theaperture",
+      "title": "THEAPERTURE",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "thegreatalfred",
+      "title": "THEGREATALFRED",
+      "cover": "cover.png",
+      "count": 8
+    },
+    {
+      "slug": "thelille",
+      "title": "THELILLE",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "ugst",
+      "title": "UGST",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "umer",
+      "title": "UMER",
+      "cover": "cover.png",
+      "count": 7
     }
   ]
 }
