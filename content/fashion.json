@@ -1,6 +1,11 @@
 {
   "shoots": [
     {
+      "slug": "outfitters",
+      "title": "OUTFITTERS",
+      "cover": "cover.jpg",
+      "count": 8
+    },{
       "slug": "beaker_1",
       "title": "BEAKER",
       "cover": "cover.jpg",
