@@ -1,11 +1,6 @@
 {
   "shoots": [
     {
-      "slug": "tenuve",
-      "title": "TENUVE",
-      "cover": "cover.jpg",
-      "count": 10
-    },{
       "slug": "outfitters",
       "title": "OUTFITTERS",
       "cover": "cover.jpg",
