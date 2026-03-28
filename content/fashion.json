@@ -1,6 +1,16 @@
 {
   "shoots": [
     {
+      "slug": "rockfish",
+      "title": "ROCKFISH",
+      "cover": "cover.jpg",
+      "count": 7
+    },{
+      "slug": "sodinkybread",
+      "title": "SODINKYBREAD",
+      "cover": "cover.jpg",
+      "count": 9
+    },{
       "slug": "ostkaka",
       "title": "OSTKAKA",
       "cover": "cover.jpg",
