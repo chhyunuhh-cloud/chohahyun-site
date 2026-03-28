@@ -1,6 +1,11 @@
 {
   "shoots": [
     {
+      "slug": "ostkaka",
+      "title": "OSTKAKA",
+      "cover": "cover.jpg",
+      "count": 10
+    },{
       "slug": "outfitters",
       "title": "OUTFITTERS",
       "cover": "cover.jpg",
