@@ -242,7 +242,6 @@ body.menu-open .side-menu{transform:translateX(0)}
   .main{padding-bottom:28vh}
 }
 
-/* ===== PC: full-width white layout ===== */
 @media (min-width: 641px){
   body{
     background: #fff;
@@ -265,14 +264,25 @@ body.menu-open .side-menu{transform:translateX(0)}
     justify-content: center;
   }
 
-  /* 햄버거를 화면 오른쪽 끝으로 */
+  /* 핵심: 사진 영역 폭 다시 제한 */
+  .hero{
+    width: min(340px, calc(100vw - 80px));
+    padding: 0;
+    margin: 30px auto 0;
+  }
+
+  .hero-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
   .menu-toggle{
     top: 22px;
     right: 32px !important;
     left: auto !important;
   }
 
-  /* 브랜드를 화면 왼쪽 끝으로 */
   .brand{
     left: 32px !important;
     right: auto !important;
@@ -281,7 +291,6 @@ body.menu-open .side-menu{transform:translateX(0)}
     padding: 0;
   }
 
-  /* back link도 화면 왼쪽 기준 */
   .backlink{
     left: 32px !important;
   }
