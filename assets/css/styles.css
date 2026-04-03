@@ -605,3 +605,56 @@ img{ -webkit-touch-callout: none; }
   display: block;
   border-radius: 0;
 }
+
+@media (min-width: 641px){
+  body{
+    background: #fff;
+  }
+
+  .page{
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .main{
+    width: 100%;
+    min-height: 100vh;
+    padding: 14vh 0 18vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero{
+    width: min(370px, calc(100vw - 80px));
+    padding: 0;
+    margin: 30px auto 0;
+  }
+
+  .hero-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .menu-toggle{
+    top: 22px;
+    right: 32px !important;
+    left: auto !important;
+  }
+
+  .brand{
+    left: 32px !important;
+    right: auto !important;
+    bottom: 22px;
+    width: auto;
+    padding: 0;
+  }
+
+  .backlink{
+    left: 32px !important;
+  }
+}
