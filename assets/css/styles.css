@@ -675,3 +675,14 @@ img{ -webkit-touch-callout: none; }
     margin-bottom: 16px;
   }
 }
+
+@media (min-width: 641px){
+  .menu-overlay{
+    background: transparent !important;
+  }
+
+  body.menu-open .menu-overlay{
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
