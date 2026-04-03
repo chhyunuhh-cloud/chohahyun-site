@@ -658,17 +658,3 @@ img{ -webkit-touch-callout: none; }
     left: 32px !important;
   }
 }
-
-@media (min-width: 641px){
-  .grid{
-    column-count: unset;
-    column-gap: unset;
-
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-
-    max-width: 900px;
-    margin: 0 auto;
-  }
-}
