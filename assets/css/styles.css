@@ -242,26 +242,50 @@ body.menu-open .side-menu{transform:translateX(0)}
   .main{padding-bottom:28vh}
 }
 
-/* ===== PC에서 모바일 프레임 기준 정렬 ===== */
+/* ===== PC: full-width white layout ===== */
 @media (min-width: 641px){
-  /* 브랜드: 프레임 왼쪽 안쪽 16px */
-  .brand{
-    left: calc(50% - (var(--frameW) / 2) + 16px) !important;
-    right: auto !important;
+  body{
+    background: #fff;
   }
 
-  /* 햄버거: 프레임 오른쪽 안쪽 16px */
+  .page{
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .main{
+    width: 100%;
+    min-height: 100vh;
+    padding: 14vh 0 18vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 햄버거를 화면 오른쪽 끝으로 */
   .menu-toggle{
-    right: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    top: 22px;
+    right: 32px !important;
     left: auto !important;
   }
 
-  /* BACK LINK도 프레임 기준으로 */
+  /* 브랜드를 화면 왼쪽 끝으로 */
+  .brand{
+    left: 32px !important;
+    right: auto !important;
+    bottom: 22px;
+    width: auto;
+    padding: 0;
+  }
+
+  /* back link도 화면 왼쪽 기준 */
   .backlink{
-    left: calc(50% - (var(--frameW) / 2) + 16px) !important;
+    left: 32px !important;
   }
 }
-
 /* =========================
    SHOOT: Page-turn Viewer (FINAL)
    ========================= */
