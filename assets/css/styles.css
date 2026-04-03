@@ -629,7 +629,7 @@ img{ -webkit-touch-callout: none; }
   }
 
   .hero{
-    width: min(370px, calc(100vw - 80px));
+    width: min(420px, calc(100vw - 80px));
     padding: 0;
     margin: 30px auto 0;
   }
