@@ -686,3 +686,11 @@ img{ -webkit-touch-callout: none; }
     pointer-events: none !important;
   }
 }
+
+@media (min-width: 641px){
+  .side-menu{
+    border-left: none !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+  }
+}
