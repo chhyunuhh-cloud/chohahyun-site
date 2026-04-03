@@ -1,6 +1,11 @@
 {
   "shoots": [
     {
+      "slug": "tenuve",
+      "title": "TENUVE",
+      "cover": "cover.jpg",
+      "count": 8
+    },{
       "slug": "rockfish",
       "title": "ROCKFISH",
       "cover": "cover.jpg",
