@@ -1,6 +1,11 @@
 {
   "shoots": [
     {
+      "slug": "kaya",
+      "cover": "cover.jpg",
+      "count": 12
+    },
+    {
       "slug": "1",
       "cover": "cover.png",
       "count": 4
@@ -19,11 +24,6 @@
       "slug": "chisaki",
       "cover": "cover.jpg",
       "count": 5
-    },
-    {
-      "slug": "kaya",
-      "cover": "cover.jpg",
-      "count": 12
     },
     {
       "slug": "rcrc",
