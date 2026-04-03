@@ -672,3 +672,43 @@ img{ -webkit-touch-callout: none; }
     margin: 0 auto;
   }
 }
+
+/* ===== PC gallery: horizontal grid ===== */
+@media (min-width: 641px){
+  .gridWrap{
+    width: 100%;
+    padding: 32px 32px 120px;
+  }
+
+  .grid{
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+
+    column-count: initial !important;
+    column-gap: 0 !important;
+
+    width: min(1200px, calc(100vw - 64px)) !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    align-items: start;
+  }
+
+  .card{
+    margin-bottom: 0 !important;
+    break-inside: auto !important;
+    width: 100% !important;
+  }
+
+  .card img{
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    transform: none !important;
+  }
+
+  .card:hover img{
+    transform: scale(1.02) !important;
+    transition: transform .35s ease;
+  }
+}
