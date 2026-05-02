@@ -1,6 +1,11 @@
 {
   "shoots": [
     {
+      "slug": "jeon1",
+      "cover": "cover.jpg",
+      "count": 12
+    },
+    {
       "slug": "kaya",
       "cover": "cover.jpg",
       "count": 12

@@ -22,16 +22,50 @@ function loadJSON(path, ok, fail){
 
 function resolveImageURL(base, name, exts, cb){
   var i = 0;
+
   function tryNext(){
-    if(i >= exts.length){ cb(null); return; }
+    if(i >= exts.length){
+      cb(null);
+      return;
+    }
+
     var ext = exts[i++];
     var url = base + name + "." + ext + "?v=" + encodeURIComponent(VER);
-    var test = new Image();
-    test.onload = function(){ cb(url); };
-    test.onerror = function(){ tryNext(); };
-    test.src = url;
+
+    var img = new Image();
+    img.onload = function(){
+      cb({
+        url: url,
+        type: "image"
+      });
+    };
+    img.onerror = function(){
+      tryNext();
+    };
+    img.src = url;
   }
+
   tryNext();
+}
+
+function resolveVideoURL(base, cb){
+  var url = base + "video.mp4?v=" + encodeURIComponent(VER);
+
+  var video = document.createElement("video");
+  video.preload = "metadata";
+
+  video.onloadedmetadata = function(){
+    cb({
+      url: url,
+      type: "video"
+    });
+  };
+
+  video.onerror = function(){
+    cb(null);
+  };
+
+  video.src = url;
 }
 
 function init(){
@@ -40,15 +74,15 @@ function init(){
   var slug = params.get("slug");
 
   var pageTurn = qs(".pageTurn");
-  var pageImg  = qs("#pageImg");
-  var flipImg  = qs("#flipImg");
-  var prevBtn  = qs("#prevBtn");
-  var nextBtn  = qs("#nextBtn");
-  var pager    = qs("#pager");
-  var title    = qs("#detailTitle");
-  var back     = qs("#backlink");
+  var oldPageImg = qs("#pageImg");
+  var oldFlipImg = qs("#flipImg");
+  var prevBtn = qs("#prevBtn");
+  var nextBtn = qs("#nextBtn");
+  var pager = qs("#pager");
+  var title = qs("#detailTitle");
+  var back = qs("#backlink");
 
-  if(!cat || !slug || !pageTurn || !pageImg || !flipImg){
+  if(!cat || !slug || !pageTurn){
     console.warn("[shoot] missing params/elements");
     return;
   }
@@ -56,41 +90,68 @@ function init(){
   if(back) back.href = cat + ".html";
 
   var base = "content/" + encodeURIComponent(cat) + "/" + encodeURIComponent(slug) + "/";
-  var exts = ["jpg","png"];
+  var exts = ["jpg", "png"];
 
-  // 상태 메시지(필요 없으면 나중에 지워도 됨)
+  // 기존 img는 숨기고, 이미지/비디오 공용 레이어를 새로 만든다
+  if(oldPageImg) oldPageImg.style.display = "none";
+  if(oldFlipImg) oldFlipImg.style.display = "none";
+
+  var pageLayer = document.createElement("div");
+  var flipLayer = document.createElement("div");
+
+  pageLayer.id = "mediaPageLayer";
+  flipLayer.id = "mediaFlipLayer";
+
+  var layerCss =
+    "position:absolute;" +
+    "inset:0;" +
+    "width:100%;" +
+    "height:100%;" +
+    "display:flex;" +
+    "align-items:center;" +
+    "justify-content:center;" +
+    "overflow:hidden;" +
+    "will-change:transform,opacity;" +
+    "transform:translate3d(0,0,0);";
+
+  pageLayer.style.cssText = layerCss + "opacity:1;";
+  flipLayer.style.cssText = layerCss + "opacity:0;pointer-events:none;";
+
+  pageTurn.appendChild(pageLayer);
+  pageTurn.appendChild(flipLayer);
+
+  // 상태 메시지
   var statusEl = document.createElement("div");
   statusEl.style.cssText = "text-align:center;font-size:12px;letter-spacing:.08em;opacity:.7;margin-top:10px;";
   var wrapEl = qs(".detailWrap");
   if(wrapEl) wrapEl.appendChild(statusEl);
-  function setStatus(msg){ if(statusEl) statusEl.textContent = msg || ""; }
 
-  // 데이터
+  function setStatus(msg){
+    if(statusEl) statusEl.textContent = msg || "";
+  }
+
   var urls = [];
   var idx = 0;
 
-  // 드래그 상태
   var isDown = false;
   var startX = 0;
   var lastX = 0;
   var dx = 0;
-
-  // 애니/전환 잠금
   var animating = false;
 
-  // 설정값 (느낌 조절)
-  var DRAG_THRESHOLD_RATIO = 0.18;  // 화면 너비의 18% 이상 드래그하면 넘김
-  var VELOCITY_THRESHOLD = 0.55;    // 빠른 스와이프 넘김
-  var TRANS_MS = 260;              // 스냅 애니 시간
-  var EASE = "cubic-bezier(.22,.61,.36,1)"; // premium easing
+  var DRAG_THRESHOLD_RATIO = 0.18;
+  var VELOCITY_THRESHOLD = 0.55;
+  var TRANS_MS = 260;
+  var EASE = "cubic-bezier(.22,.61,.36,1)";
 
   function w(){
     return pageTurn.getBoundingClientRect().width || window.innerWidth;
   }
 
-  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+  function clamp(n, a, b){
+    return Math.max(a, Math.min(b, n));
+  }
 
-  // ✅ 무한 루프 인덱스 래핑(음수도 안전)
   function wrapIndex(i, n){
     return (i % n + n) % n;
   }
@@ -103,79 +164,130 @@ function init(){
     el.style.opacity = String(o);
   }
 
-  // ✅ 무한 루프: prev/next disabled 없음 + pager 표시 제거
   function updateUI(){
     if(prevBtn) prevBtn.disabled = false;
     if(nextBtn) nextBtn.disabled = false;
-    if(pager) pager.textContent = ""; // 1/4 같은 표시 없애기
+    if(pager) pager.textContent = "";
   }
 
-  // 현재 idx 기준으로 이미지 세팅 + 주변 프리로드
+  function createMediaEl(media){
+    var el;
+
+    if(media.type === "video"){
+      el = document.createElement("video");
+      el.src = media.url;
+      el.autoplay = true;
+      el.muted = true;
+      el.loop = true;
+      el.playsInline = true;
+      el.controls = false;
+      el.preload = "metadata";
+    } else {
+      el = document.createElement("img");
+      el.src = media.url;
+      el.alt = "";
+    }
+
+    el.style.cssText =
+      "max-width:100%;" +
+      "max-height:100%;" +
+      "width:100%;" +
+      "height:100%;" +
+      "object-fit:contain;" +
+      "display:block;" +
+      "border:0;" +
+      "outline:0;" +
+      "border-radius:0;";
+
+    return el;
+  }
+
+  function setLayerMedia(layer, media){
+    if(!media) return;
+
+    var currentUrl = layer.getAttribute("data-url");
+    if(currentUrl === media.url) return;
+
+    layer.innerHTML = "";
+    layer.setAttribute("data-url", media.url);
+    layer.setAttribute("data-type", media.type);
+    layer.appendChild(createMediaEl(media));
+  }
+
+  function playVisibleVideos(){
+    var videos = pageTurn.querySelectorAll("video");
+    videos.forEach(function(v){
+      if(v.closest("#mediaPageLayer")){
+        var p = v.play();
+        if(p && p.catch) p.catch(function(){});
+      } else {
+        v.pause();
+      }
+    });
+  }
+
   function show(i){
     if(!urls.length) return;
+
     idx = wrapIndex(i, urls.length);
 
-    pageImg.src = urls[idx];
-    // flipImg는 기본 숨김 상태
-    flipImg.style.opacity = "0";
-    setTransform(pageImg, 0);
-    setTransform(flipImg, 0);
+    setLayerMedia(pageLayer, urls[idx]);
 
-    // 프리로드(체감 부드러움 상승)
+    setOpacity(flipLayer, 0);
+    setTransform(pageLayer, 0);
+    setTransform(flipLayer, 0);
+
     preload(idx - 1);
     preload(idx + 1);
 
     updateUI();
+    playVisibleVideos();
   }
 
   function preload(i){
     if(!urls.length) return;
+
     var j = wrapIndex(i, urls.length);
-    var im = new Image();
-    im.src = urls[j];
+    var media = urls[j];
+
+    if(media.type === "image"){
+      var im = new Image();
+      im.src = media.url;
+    } else if(media.type === "video"){
+      var v = document.createElement("video");
+      v.preload = "metadata";
+      v.src = media.url;
+    }
   }
 
-  // 전환 애니 켜기/끄기
   function setAnim(on){
     var v = on ? ("transform " + TRANS_MS + "ms " + EASE + ", opacity " + TRANS_MS + "ms " + EASE) : "none";
-    pageImg.style.transition = v;
-    flipImg.style.transition = v;
+    pageLayer.style.transition = v;
+    flipLayer.style.transition = v;
   }
 
-  // 드래그 중: 다음/이전 이미지를 flipImg에 깔아두고, 두 레이어를 같이 움직임
   function renderDrag(deltaX){
     var width = w();
     var progress = clamp(Math.abs(deltaX) / width, 0, 1);
 
-    // 다음/이전 방향 결정
-    var dir = (deltaX < 0) ? 1 : -1;  // 왼쪽으로 끌면 다음(+1)
-
-    // ✅ 무한 루프: target을 항상 wrap
+    var dir = (deltaX < 0) ? 1 : -1;
     var target = wrapIndex(idx + dir, urls.length);
 
-    // flipImg에 다음/이전 이미지 깔기 (필요할 때만 src 변경)
-    var needSrc = urls[target];
-    if(flipImg.getAttribute("data-src") !== needSrc){
-      flipImg.setAttribute("data-src", needSrc);
-      flipImg.src = needSrc;
-    }
+    setLayerMedia(flipLayer, urls[target]);
 
-    // 레이어 위치:
-    var off = (deltaX < 0) ? width : -width; // 끌어오는 방향의 반대쪽에서 등장
-    setTransform(pageImg, deltaX);
-    setTransform(flipImg, deltaX + off);
+    var off = (deltaX < 0) ? width : -width;
 
-    // 오퍼시티: 살짝 크로스페이드(과하지 않게)
-    setOpacity(flipImg, 0.85 * progress);
-    setOpacity(pageImg, 1 - 0.20 * progress);
+    setTransform(pageLayer, deltaX);
+    setTransform(flipLayer, deltaX + off);
+
+    setOpacity(flipLayer, 0.85 * progress);
+    setOpacity(pageLayer, 1 - 0.20 * progress);
   }
 
-  // 스냅 전환(넘기기)
   function commit(dir){
     if(animating) return;
     if(!urls.length) return;
 
-    // ✅ 무한 루프: target을 wrap (범위 체크 제거)
     var target = wrapIndex(idx + dir, urls.length);
 
     animating = true;
@@ -183,78 +295,83 @@ function init(){
 
     var width = w();
 
-    // flipImg에 목표 이미지 확정
-    var needSrc = urls[target];
-    flipImg.setAttribute("data-src", needSrc);
-    flipImg.src = needSrc;
+    setLayerMedia(flipLayer, urls[target]);
 
-    // dir=1(다음) => 현재는 왼쪽으로 -width로 나가고, 다음은 0으로 들어옴
-    // dir=-1(이전) => 현재는 오른쪽 +width로 나가고, 이전은 0으로
     var pageEnd = (dir === 1) ? -width : width;
     var flipStart = (dir === 1) ? width : -width;
 
-    // 시작 포지션 잡고
-    setTransform(flipImg, flipStart);
-    setOpacity(flipImg, 0.9);
+    setTransform(flipLayer, flipStart);
+    setOpacity(flipLayer, 0.9);
 
-    // 다음 프레임에 애니 시작
     requestAnimationFrame(function(){
-      setTransform(pageImg, pageEnd);
-      setTransform(flipImg, 0);
-      setOpacity(flipImg, 1);
-      setOpacity(pageImg, 0.85);
+      setTransform(pageLayer, pageEnd);
+      setTransform(flipLayer, 0);
+      setOpacity(flipLayer, 1);
+      setOpacity(pageLayer, 0.85);
     });
 
-    // 애니 끝나면 idx 갱신 + 정리
     window.setTimeout(function(){
       setAnim(false);
-      idx = target;
-      pageImg.src = urls[idx];
 
-      // 리셋
-      setTransform(pageImg, 0);
-      setOpacity(pageImg, 1);
-      setTransform(flipImg, 0);
-      setOpacity(flipImg, 0);
+      idx = target;
+
+      setLayerMedia(pageLayer, urls[idx]);
+
+      setTransform(pageLayer, 0);
+      setOpacity(pageLayer, 1);
+
+      setTransform(flipLayer, 0);
+      setOpacity(flipLayer, 0);
+
+      flipLayer.innerHTML = "";
+      flipLayer.removeAttribute("data-url");
+      flipLayer.removeAttribute("data-type");
+
       animating = false;
 
       preload(idx - 1);
       preload(idx + 1);
       updateUI();
+      playVisibleVideos();
     }, TRANS_MS + 30);
   }
 
   function cancelDrag(){
     if(animating) return;
+
     setAnim(true);
+
     requestAnimationFrame(function(){
-      setTransform(pageImg, 0);
-      setOpacity(pageImg, 1);
-      setTransform(flipImg, 0);
-      setOpacity(flipImg, 0);
+      setTransform(pageLayer, 0);
+      setOpacity(pageLayer, 1);
+      setTransform(flipLayer, 0);
+      setOpacity(flipLayer, 0);
     });
+
     window.setTimeout(function(){
       setAnim(false);
     }, TRANS_MS + 30);
   }
 
-  // Pointer events (모바일/PC 드래그 통합)
   function onDown(e){
     if(animating) return;
+
     isDown = true;
     startX = e.clientX;
     lastX = e.clientX;
     dx = 0;
 
     setAnim(false);
-    pageTurn.setPointerCapture && pageTurn.setPointerCapture(e.pointerId);
 
-    // flipImg 초기화
-    flipImg.style.opacity = "0";
+    if(pageTurn.setPointerCapture){
+      pageTurn.setPointerCapture(e.pointerId);
+    }
+
+    flipLayer.style.opacity = "0";
   }
 
   var lastT = 0;
-  var vx = 0; // velocity
+  var vx = 0;
 
   function onMove(e){
     if(!isDown || animating) return;
@@ -263,13 +380,12 @@ function init(){
     var x = e.clientX;
     var delta = x - lastX;
 
-    // velocity 계산
     if(lastT){
       var dt = Math.max(1, now - lastT);
-      vx = delta / dt; // px/ms
+      vx = delta / dt;
     }
-    lastT = now;
 
+    lastT = now;
     lastX = x;
     dx = x - startX;
 
@@ -278,38 +394,34 @@ function init(){
 
   function onUp(){
     if(!isDown || animating) return;
+
     isDown = false;
 
     var width = w();
     var threshold = width * DRAG_THRESHOLD_RATIO;
-
-    // 빠른 스와이프면 짧아도 넘김
     var fast = Math.abs(vx) > VELOCITY_THRESHOLD;
 
     if(dx < -threshold || (fast && vx < 0)){
-      commit(1);   // 다음
+      commit(1);
     } else if(dx > threshold || (fast && vx > 0)){
-      commit(-1);  // 이전
+      commit(-1);
     } else {
       cancelDrag();
     }
 
-    // reset velocity tracker
-    vx = 0; lastT = 0;
+    vx = 0;
+    lastT = 0;
   }
 
-  // 버튼
   if(prevBtn) prevBtn.addEventListener("click", function(){ commit(-1); });
   if(nextBtn) nextBtn.addEventListener("click", function(){ commit(1); });
 
-  // 키보드
   document.addEventListener("keydown", function(e){
-    if(e.key === "ArrowLeft")  commit(-1);
+    if(e.key === "ArrowLeft") commit(-1);
     if(e.key === "ArrowRight") commit(1);
   });
 
-  // pointer 이벤트 바인딩
-  pageTurn.style.touchAction = "pan-y"; // 세로 스크롤은 살리고, 좌우 드래그는 우리가 처리
+  pageTurn.style.touchAction = "pan-y";
   pageTurn.addEventListener("pointerdown", onDown);
   pageTurn.addEventListener("pointermove", onMove);
   pageTurn.addEventListener("pointerup", onUp);
@@ -326,14 +438,17 @@ function init(){
       var shoots = Array.isArray(data) ? data : (data && data.shoots ? data.shoots : []);
       var shoot = null;
 
-      for(var i=0; i<shoots.length; i++){
-        if(shoots[i] && shoots[i].slug === slug){ shoot = shoots[i]; break; }
+      for(var i = 0; i < shoots.length; i++){
+        if(shoots[i] && shoots[i].slug === slug){
+          shoot = shoots[i];
+          break;
+        }
       }
 
-      // 타이틀 (CSS에서 숨겨도 OK)
       if(title){
         var main = (shoot && shoot.title) ? shoot.title : slug;
-        var sub  = (shoot && shoot.subtitle) ? shoot.subtitle : "";
+        var sub = (shoot && shoot.subtitle) ? shoot.subtitle : "";
+
         title.innerHTML =
           '<div class="detailTitleMain">' + main + '</div>' +
           (sub ? '<div class="detailTitleSub">' + sub + '</div>' : '');
@@ -342,44 +457,51 @@ function init(){
       var max = (shoot && shoot.count != null) ? parseInt(shoot.count, 10) : 0;
       console.log("[shoot] cat=", cat, "slug=", slug, "count=", max);
 
-      if(!max){
-        setStatus("NO IMAGES (count is 0). JSON에 count 확인");
-        return;
-      }
-
       var n = 1;
-      var started = false; // ✅ 첫 장 띄웠는지
+      var started = false;
+
+      function finishLoading(){
+        resolveVideoURL(base, function(videoMedia){
+          if(videoMedia){
+            urls.push(videoMedia);
+          }
+
+          if(!urls.length){
+            setStatus("IMAGES / VIDEO NOT FOUND. 파일명 01.jpg, 02.jpg... 또는 video.mp4 경로 확인");
+            return;
+          }
+
+          setStatus("");
+
+          if(!started){
+            started = true;
+            show(0);
+          }
+        });
+      }
 
       function loadNext(){
-        if(n > max){
-         if(!urls.length){
-           setStatus("IMAGES NOT FOUND. 파일명 01.jpg, 02.jpg... / 경로 확인");
-          } else {
-            setStatus("");
-            if(!started) show(0);
-          }
-        return;
-      }
+        if(!max || n > max){
+          finishLoading();
+          return;
+        }
 
         var name = pad(n);
 
-        resolveImageURL(base, name, exts, function(url){
-          if(url){
-            urls.push(url);
+        resolveImageURL(base, name, exts, function(media){
+          if(media){
+            urls.push(media);
 
-      // ✅ 첫 장을 찾는 순간 즉시 보여주기
             if(!started){
               started = true;
               setStatus("");
               show(0);
-              }
             }
+          }
 
-            n++;
-
-    // ✅ 메인스레드 숨 좀 쉬게 (모바일 체감 개선)
-            setTimeout(loadNext, 0);
-          });
+          n++;
+          setTimeout(loadNext, 0);
+        });
       }
 
       loadNext();

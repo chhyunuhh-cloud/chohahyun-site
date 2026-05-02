@@ -1,6 +1,67 @@
 {
   "shoots": [
     {
+      "slug": "andneeds",
+      "title": "ANDNEEDS",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "aroundyur",
+      "title": "AROUNDYUR",
+      "cover": "cover.jpg",
+      "count": 7
+    },
+    {
+      "slug": "blossom",
+      "title": "BLOSSOM",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+
+    {
+      "slug": "deeto",
+      "title": "DEETO",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "eql",
+      "title": "EQL:",
+      "cover": "cover.jpg",
+      "count": 1
+    },
+    {
+      "slug": "flowoom",
+      "title": "FLOWOOM",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
+      "slug": "frontrow",
+      "title": "FRONTROW",
+      "cover": "cover.jpg",
+      "count": 1
+    },
+    {
+      "slug": "marieclare",
+      "title": "MARIECLARE",
+      "cover": "cover.jpg",
+      "count": 1
+    },
+    {
+      "slug": "myudese",
+      "title": "MYUDESE",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "flowoom2",
+      "title": "FLOWOOM",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
       "slug": "tenuve",
       "title": "TENUVE",
       "cover": "cover.jpg",
