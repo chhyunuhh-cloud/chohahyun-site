@@ -709,3 +709,9 @@ img{ -webkit-touch-callout: none; }
   box-shadow: none !important;
   background: transparent !important;
 }
+
+#pageImg,
+#flipImg{
+  display: none !important;
+}
+var VER = "202602153";

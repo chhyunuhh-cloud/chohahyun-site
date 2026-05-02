@@ -93,8 +93,8 @@ function init(){
   var exts = ["jpg", "png"];
 
   // 기존 img는 숨기고, 이미지/비디오 공용 레이어를 새로 만든다
-  if(oldPageImg) oldPageImg.style.display = "none";
-  if(oldFlipImg) oldFlipImg.style.display = "none";
+  if(oldPageImg) oldPageImg.remove();
+  if(oldFlipImg) oldFlipImg.remove();
 
   var pageLayer = document.createElement("div");
   var flipLayer = document.createElement("div");
