@@ -694,3 +694,18 @@ img{ -webkit-touch-callout: none; }
     backdrop-filter: none !important;
   }
 }
+
+/* ===== remove border around shoot media viewer ===== */
+.viewer,
+.pageTurn,
+#mediaPageLayer,
+#mediaFlipLayer,
+#mediaPageLayer img,
+#mediaFlipLayer img,
+#mediaPageLayer video,
+#mediaFlipLayer video{
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
