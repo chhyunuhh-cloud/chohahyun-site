@@ -177,10 +177,10 @@ function init(){
       el = document.createElement("video");
       el.src = media.url;
       el.autoplay = true;
-      el.muted = true;
+      el.muted = false;
       el.loop = true;
       el.playsInline = true;
-      el.controls = false;
+      el.controls = true;
       el.preload = "metadata";
     } else {
       el = document.createElement("img");
