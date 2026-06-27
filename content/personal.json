@@ -1,6 +1,16 @@
 {
   "shoots": [
     {
+      "slug": "maisonnavie",
+      "cover": "cover.png",
+      "count": 1
+    },
+    {
+      "slug": "bouquet",
+      "cover": "cover.jpg",
+      "count": 11
+    },
+    {
       "slug": "jeon1",
       "cover": "cover.jpg",
       "count": 12
