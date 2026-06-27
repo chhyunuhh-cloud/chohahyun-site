@@ -1,6 +1,72 @@
 {
   "shoots": [
     {
+      "slug": "wconcept",
+      "title": "WconceptXnike",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "andneeds_2",
+      "title": "ANDNEEDS",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "aubour",
+      "title": "AUBOUR",
+      "cover": "cover.jpg",
+      "count": 6
+    },
+    {
+      "slug": "fotl",
+      "title": "FOTL",
+      "cover": "cover.jpg",
+      "count": 12
+    },
+    {
+      "slug": "lememe",
+      "title": "LEMEME",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "lotsyou",
+      "title": "LOTSYOU",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
+      "slug": "moonlee",
+      "title": "MOONLEE",
+      "cover": "cover.jpg",
+      "count": 8
+    },
+    {
+      "slug": "noja",
+      "title": "NOJA",
+      "cover": "cover.jpg",
+      "count": 7
+    },
+    {
+      "slug": "travert",
+      "title": "TRAVERT",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "theliile",
+      "title": "THELIILE",
+      "cover": "cover.jpg",
+      "count": 10
+    },
+    {
+      "slug": "ugst",
+      "title": "UGST",
+      "cover": "cover.jpg",
+      "count": 9
+    },
+    {
       "slug": "andneeds",
       "title": "ANDNEEDS",
       "cover": "cover.jpg",
