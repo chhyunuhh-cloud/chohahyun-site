@@ -176,7 +176,7 @@ function init(){
     if(media.type === "video"){
       el = document.createElement("video");
       el.src = media.url;
-      el.autoplay = true;
+      el.autoplay = false;
       el.muted = false;
       el.loop = true;
       el.playsInline = true;
@@ -217,10 +217,7 @@ function init(){
   function playVisibleVideos(){
     var videos = pageTurn.querySelectorAll("video");
     videos.forEach(function(v){
-      if(v.closest("#mediaPageLayer")){
-        var p = v.play();
-        if(p && p.catch) p.catch(function(){});
-      } else {
+      if(!v.closest("#mediaPageLayer")){
         v.pause();
       }
     });
